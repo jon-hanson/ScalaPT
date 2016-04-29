@@ -3,17 +3,24 @@ ScalaPT
 
 # Introduction
 
-ScalaPT is a rewrite of Kevin Beason's [smallpt](http://www.kevinbeason.com/smallpt/) global illumination renderer in Scala.
-The original code was rewritten in order to make the underlying implementation more readily understandable,
-whereas the original code was designed to be as short as possible.
+![Screenshot](https://github.com/jon-hanson/ScalaPT/blob/master/examples/cornell2.png)
 
-While the application is running it displays a window containing the images as it renders.
+ScalaPT is a rewrite of Kevin Beason's [smallpt](http://www.kevinbeason.com/smallpt/) global illumination renderer in Scala.
+The code was rewritten with several goals in mind:
+
+* Port to Scala.
+* Make the underlying implementation more readily understandable (the original code was designed to be as short as possible).
+* Render each frame of the image progressively (the original redered each pixel completely before moving onto the next).
+
+While the application is running it displays a window containing the image as it renders:
+
+<img src="https://github.com/jon-hanson/ScalaPT/blob/master/examples/screenshot.png" width="256">
 
 # Usage
 
 The project is written entirely in Scala and builds with the supplied SBT build file.
 
-To run it, run the `scalapt.MainFrame` class, which accepts the following optional arguments:
+To run it once built, run the `scalapt.MainFrame` class, which accepts the following optional arguments:
 
 Parameter | Default | Description
 ----------|---------|---
@@ -27,6 +34,3 @@ For the output filename, the format is inferred from the suffix.
 Supported format types are those support by the Java [ImageIO](https://docs.oracle.com/javase/8/docs/api/javax/imageio/ImageIO.html),
 which includes JPG, GIF and PNG.
 If the file has no suffix then it defaults to PNG.
-
-# Sample Image
-
