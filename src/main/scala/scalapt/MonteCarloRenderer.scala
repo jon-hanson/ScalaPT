@@ -25,9 +25,6 @@ object ConcurrentUtils {
 
 /**
   * Monte-Carlo path tracing renderer.
-  * @param width
-  * @param height
-  * @param scene
   */
 class MonteCarloRenderer(
     val width : Integer,

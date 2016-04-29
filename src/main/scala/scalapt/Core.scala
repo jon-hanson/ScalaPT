@@ -141,7 +141,7 @@ case class Camera(ray : Ray, fov : Double)
   */
 
 object Scene {
-    val distance = Ordering.by((_: Tuple2[Shape, Double])._2)
+    val distance = Ordering.by((_: (Shape, Double))._2)
 }
 
 case class Scene(camera : Camera, shapes : List[Shape]) {
@@ -152,8 +152,7 @@ case class Scene(camera : Camera, shapes : List[Shape]) {
       */
     def intersect(ray : Ray) : Option[(Shape, Point3)] = {
          shapes
-            .map(obj => obj.intersect(ray).map(t => (obj, t)))
-            .flatten
+            .flatMap(obj => obj.intersect(ray).map(t => (obj, t)))
             .reduceOption(Scene.distance.min)
             .map({case(obj, t) => (obj, ray(t))})
     }

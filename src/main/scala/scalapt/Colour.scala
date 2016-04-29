@@ -72,7 +72,7 @@ case class RGB(red : Double, green : Double, blue : Double) {
 }
 
 /**
-  * SuperSamp is a 2x2 grid of colous, used for super-sampling
+  * SuperSamp is a 2x2 grid of colours, used for super-sampling
   * in order improve anti-aliasing.
   */
 object SuperSamp {

@@ -8,9 +8,10 @@ object SceneRegistry {
         )
 
     def lookup(name: String): Scene =
-        scenes
-            .get(name)
-            .getOrElse(throw new IllegalArgumentException(name + " not recognised"))
+        scenes.getOrElse(
+            name,
+            throw new IllegalArgumentException(name + " not recognised")
+        )
 }
 
 /**
