@@ -11,12 +11,11 @@ case class Diffuse(colour : RGB, emColour : RGB, emis : Boolean = false) extends
     override def radiance(
         rdr : Renderer,
         rng : RandomNumGen,
-        ray : Ray,
-        depth : Integer,
-        x : Point3,
+        ray : Ray, depth: Integer,
+        p : Point3,
         n : Vector3,
         nl : Vector3
-    ) = {
+     ) = {
         val r1 = 2.0 * math.Pi * rng()
         val r2 = rng()
         val r2s = math.sqrt(r2)
@@ -28,7 +27,7 @@ case class Diffuse(colour : RGB, emColour : RGB, emis : Boolean = false) extends
                 + v * math.sin(r1) * r2s
                 + w * math.sqrt(1.0 - r2)
                 ).normalise
-        rdr.radiance(rng, Ray(x, d), depth)
+        rdr.radiance(rng, Ray(p, d), depth)
     }
 }
 
@@ -40,15 +39,14 @@ case class Refractive(colour : RGB, emColour : RGB) extends Material {
     override def radiance(
         rdr : Renderer,
         rng : RandomNumGen,
-        ray : Ray,
-        depth : Integer,
-        x : Point3,
+        ray : Ray, depth: Integer,
+        p : Point3,
         n : Vector3,
         nl : Vector3
     ) = {
         val nc = 1.0
         val nt = 1.5
-        val reflRay = Ray(x, ray.dir - n * 2.0 * n.dot(ray.dir))
+        val reflRay = Ray(p, ray.dir - n * 2.0 * n.dot(ray.dir))
         val into = n.dot(nl) > 0.0
         val nnt = if (into) nc / nt else nt / nc
         val ddn = ray.dir.dot(nl)
@@ -65,19 +63,19 @@ case class Refractive(colour : RGB, emColour : RGB) extends Material {
             val c = 1.0 - (if (into) -ddn else tdir.dot(n))
             val re = r0 + (1.0 - r0) * c * c * c * c * c
             val tr = 1.0 - re
-            val p = 0.25 + re / 2.0
-            val rp = re / p
-            val tp = tr / (1.0 - p)
+            val q = 0.25 + re / 2.0
+            val rp = re / q
+            val tp = tr / (1.0 - q)
 
             if (depth > 2) {
-                if (rng() < p) {
+                if (rng() < q) {
                     rdr.radiance(rng, reflRay, depth) * rp
                 } else {
-                    rdr.radiance(rng, Ray(x, tdir), depth) * tp
+                    rdr.radiance(rng, Ray(p, tdir), depth) * tp
                 }
             } else {
                 rdr.radiance(rng, reflRay, depth) * re +
-                    rdr.radiance(rng, Ray(x, tdir), depth) * tr
+                    rdr.radiance(rng, Ray(p, tdir), depth) * tr
             }
         }
     }
@@ -90,13 +88,12 @@ case class Reflective(colour : RGB, emColour : RGB) extends Material {
     override def radiance(
         rdr : Renderer,
         rng : RandomNumGen,
-        ray : Ray,
-        depth : Integer,
-        x : Point3,
+        ray : Ray, depth: Integer,
+        p : Point3,
         n : Vector3,
         nl : Vector3
     ) = {
         val d = ray.dir - n * 2 * n.dot(ray.dir)
-        rdr.radiance(rng, Ray(x, d), depth)
+        rdr.radiance(rng, Ray(p, d), depth)
     }
 }

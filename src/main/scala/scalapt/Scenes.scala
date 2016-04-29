@@ -1,5 +1,8 @@
 package scalapt
 
+/**
+  * Original smallpt Cornell box scene.
+  */
 object Cornell {
 
     val objects : List[Shape] =

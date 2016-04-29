@@ -37,7 +37,8 @@ case class Sphere(
 }
 
 /**
-  * Plane
+  * An axis-aligned infinite plane.
+  * Only allows light through in one direction (controlled by posFacing)
   */
 case class Plane(
     name : String,

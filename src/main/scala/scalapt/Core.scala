@@ -2,6 +2,9 @@ package scalapt
 
 object MathUtil {
 
+    /**
+      * Tent function
+      */
     def tent(x : Double) : Double = {
         val x2 = 2.0 * x
         if (x2 < 1.0)
@@ -10,10 +13,10 @@ object MathUtil {
             1.0 - math.sqrt(2.0 - x2)
     }
 
-    def clamp(x : Double) : Double =
-        clamp(x, 0.0, 1.0)
-
-    def clamp(x : Double, low : Double, high : Double) : Double = {
+    /**
+      * Clamp a value to a range.
+      */
+    def clamp(x : Double, low : Double = 0.0, high : Double = 1.0) : Double = {
         if (x > high)
             high
         else if (x < low)
@@ -22,12 +25,18 @@ object MathUtil {
             x
     }
 
+    /**
+      * Square function.
+      */
     def sqr(x : Double) : Double =
         x * x
 
-    // Gamma correction.
+    // Standard gamma correction value.
     final val GAMMA : Double = 2.2
 
+    /**
+      * Standard gamma correction.
+      */
     def gammaCorr(x : Double) : Double =
         math.pow(clamp(x), 1.0 / GAMMA)
 }
@@ -88,7 +97,7 @@ trait Material {
         rng : RandomNumGen,
         ray : Ray,
         depth : Integer,
-        x : Point3,
+        p : Point3,
         n : Vector3,
         nl : Vector3
     ) : RGB
@@ -99,11 +108,17 @@ trait Material {
  */
 
 object Shape {
-    // Epsilion value to avoid object self-intersections.
+    /**
+      * Epsilion value to avoid object self-intersections.
+      */
+
     final val T_EPS : Double = 1e-4
 }
 
 trait Shape {
+    /**
+      * Only used for debugging.
+      */
     val name : String
 
     val material : Material
@@ -122,25 +137,68 @@ trait Shape {
 case class Camera(ray : Ray, fov : Double)
 
 /**
- * Scene
- */
-case class Scene(camera : Camera, prims : List[Shape]) {
+  * Scene
+  */
 
+object Scene {
+    val distance = Ordering.by((_: Tuple2[Shape, Double])._2)
+}
+
+case class Scene(camera : Camera, shapes : List[Shape]) {
+    /**
+      * Find the closest shape intersected by the ray.
+      * @param ray
+      * @return closest shape and intersection point
+      */
     def intersect(ray : Ray) : Option[(Shape, Point3)] = {
-        val isectOpts = prims.map(obj => obj.intersect(ray).map(t => (obj, t)))
-        val isects = isectOpts.flatten
-        val first = isects.foldLeft(None : Option[(Shape, Double)])((first, isect) => {
-            first match {
-                case None => Some(isect)
-                case Some(closestIsect) => {
-                    if (closestIsect._2 < isect._2)
-                        first
-                    else
-                        Some(isect)
-                }
-            }
-        })
-
-        first.map(isect => (isect._1, ray(isect._2)))
+         shapes
+            .map(obj => obj.intersect(ray).map(t => (obj, t)))
+            .flatten
+            .reduceOption(Scene.distance.min)
+            .map({case(obj, t) => (obj, ray(t))})
     }
+}
+
+/**
+  * Renderer
+  */
+
+object Renderer {
+    // Need a maximum to avoid stack overflow.
+    final val MaxDepth = 200
+}
+
+trait Renderer {
+    def width : Integer
+    def height : Integer
+    def scene : Scene
+
+    private val cx = Vector3(width * scene.camera.fov / height, 0.0, 0.0)
+    private val cy = cx.cross(scene.camera.ray.dir).normalise * scene.camera.fov
+
+    def camRay(xs : Double, ys : Double) : Vector3 =
+        cx * (xs / width - 0.5) +
+            cy * (ys / height - 0.5)
+
+    def render(rng : RandomNumGen, x : Int, y : Int) : SuperSamp = {
+        def subRad(cx : Double, cy : Double) = {
+            val dx = MathUtil.tent(rng())
+            val dy = MathUtil.tent(rng())
+            val sx = x + (0.5 + cx + dx) * 0.5
+            val sy = y + (0.5 + cy + dy) * 0.5
+            val dir = scene.camera.ray.dir + camRay(sx, sy)
+            val origin = scene.camera.ray.origin
+            val ray = Ray(origin, dir)
+            radiance(rng, ray, 0)
+        }
+
+        SuperSamp(subRad(0, 0), subRad(1, 0), subRad(0, 1), subRad(1, 1))
+    }
+
+    def radiance(
+        rng : RandomNumGen,
+        ray : Ray,
+        depth : Integer
+    ) : RGB
+
 }
