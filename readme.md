@@ -20,7 +20,7 @@ While the application is running it displays a window containing the image as it
 
 The project is written entirely in Scala and builds with the supplied SBT build file.
 
-To run it once built, run the `scalapt.MainFrame` class, which accepts the following optional arguments:
+Once built, run the `scalapt.MainFrame` class, which accepts the following optional arguments:
 
 Parameter | Default | Description
 ----------|---------|---
