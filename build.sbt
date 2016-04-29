@@ -1,4 +1,4 @@
-name := "scalaray"
+name := "ScalaPT"
 
 version := "1.0"
 
