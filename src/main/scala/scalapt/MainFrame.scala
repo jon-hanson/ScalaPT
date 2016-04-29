@@ -9,12 +9,13 @@ import javax.imageio.ImageIO
 
 object MainFrame {
     def main(args : Array[String]) : Unit = {
-        val width = if (args.length > 0) Integer.parseInt(args(0)) else 1024
-        val height = if (args.length > 1) Integer.parseInt(args(1)) else 768
-        val frames = if (args.length > 2) Integer.parseInt(args(2)) else 1024
-        val outFile = if (args.length > 3) Option(new File(args(3))) else Option.empty
+        val scene = if (args.length > 0) SceneRegistry.lookup(args(0)) else Cornell.scene
+        val width = if (args.length > 1) Integer.parseInt(args(1)) else 1024
+        val height = if (args.length > 2) Integer.parseInt(args(2)) else 768
+        val frames = if (args.length > 3) Integer.parseInt(args(3)) else 1024
+        val outFile = if (args.length > 4) Option(new File(args(4))) else Option.empty
 
-        val frame = new MainFrame("ScalaPT", width, height, Cornell2.scene, frames, outFile)
+        val frame = new MainFrame("ScalaPT", width, height, scene, frames, outFile)
     }
 }
 

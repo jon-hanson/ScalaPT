@@ -1,5 +1,18 @@
 package scalapt
 
+object SceneRegistry {
+    def scenes: Map[String, Scene] =
+        Map(
+            "Cornell" -> Cornell.scene,
+            "Cornell2" -> Cornell2.scene
+        )
+
+    def lookup(name: String): Scene =
+        scenes
+            .get(name)
+            .getOrElse(throw new IllegalArgumentException(name + " not recognised"))
+}
+
 /**
   * Original smallpt Cornell box scene.
   */
