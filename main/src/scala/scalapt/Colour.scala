@@ -103,4 +103,3 @@ case class SuperSamp(c00 : RGB, c10 : RGB, c01 : RGB, c11 : RGB) {
     def +(rhs : SuperSamp) : SuperSamp =
         SuperSamp(c00 + rhs.c00, c10 + rhs.c10, c01 + rhs.c01, c11 + rhs.c11)
 }
-

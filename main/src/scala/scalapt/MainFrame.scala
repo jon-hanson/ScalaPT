@@ -9,7 +9,7 @@ import javax.imageio.ImageIO
 
 object MainFrame {
     def main(args : Array[String]) : Unit = {
-        val inFile = if (args.length > 0) args(0) else "scenes/cornell.json"
+        val inFile = if (args.length > 0) args(0) else "scenes/cornell2.json"
         val width = if (args.length > 1) Integer.parseInt(args(1)) else 1024
         val height = if (args.length > 2) Integer.parseInt(args(2)) else 768
         val frames = if (args.length > 3) Integer.parseInt(args(3)) else 1024
@@ -20,13 +20,14 @@ object MainFrame {
 }
 
 class MainFrame(
-       frameTitle : String,
-       val w : Int,
-       val h : Int,
-       val inFile : String,
-       val frames : Int,
-       val outFile : Option[File],
-       var closing : Boolean = false) extends Frame(frameTitle) {
+   frameTitle : String,
+   val w : Int,
+   val h : Int,
+   val inFile : String,
+   val frames : Int,
+   val outFile : Option[File],
+   var closing : Boolean = false
+) extends Frame(frameTitle) {
 
     System.out.println("Scene: " + inFile)
     System.out.println("Width: " + w)

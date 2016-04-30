@@ -197,5 +197,4 @@ trait Renderer {
         ray : Ray,
         depth : Integer
     ) : RGB
-
 }
