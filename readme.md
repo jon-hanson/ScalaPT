@@ -7,7 +7,7 @@ ScalaPT
 
 ScalaPT is a rewrite of Kevin Beason's [smallpt](http://www.kevinbeason.com/smallpt/) global illumination renderer in Scala.
 
-Smallpt (and therefore ScalaPT) solves the Light Transport equation via a Monte Carlo approach, whereby multiple light paths are fired per pixel and averaged over. Each path is traced through the scene as it bounces off various surfaces. The incoming ray for each bounce is chosen at random, governed by the bidirectional reflectance distribution function (BRDF), which itself is determined by the material of the surface in question.
+Smallpt (and therefore ScalaPT) solves the [Rendering Equation](https://en.wikipedia.org/wiki/Rendering_equation) using a [Monte Carlo](https://en.wikipedia.org/wiki/Monte_Carlo_method) approach, whereby multiple light paths are fired per pixel and averaged over. Each path is traced through the scene as it bounces off various surfaces. The incoming ray for each bounce is chosen at random, governed by the [bidirectional distribution functions](https://en.wikipedia.org/wiki/Bidirectional_scattering_distribution_function) for the material of the surface in question.
 
 This approach, while slow to converge, is a relatively simple means of obtaining photorealistic images, which include natural effects such as ambient occlusion, light bleeding, reflections, refraction and caustics.
 
@@ -17,13 +17,13 @@ The code was rewritten with several goals in mind:
 * Make the underlying implementation more readily understandable (the original code was designed to be as short as possible).
 * Render each frame (i.e. each iteration) of the image progressively (the original rendered each pixel completely before moving onto the next).
 
-Consequently, the source code lacks the brevity of the original - it's probably around 1k lines in total, so about 10 times longer.
+Consequently, the source code lacks the brevity of the original - excluding the windowing and I/O code it's around 800 lines in total, so about 8 times longer.
 
 While the application is running it displays a window containing the image as it renders:
 
 <img src="https://github.com/jon-hanson/ScalaPT/blob/master/examples/screenshot.png" width="256">
 
-Note, I haven't, at this stage, added any optimizations, so the rendered image is slow to converge. As per the original smallpt, to arrive at a completely noise-free image can require around 25k iterations, which, for the default image size, can take around 12 hours on a modern PC.
+Note, I haven't, at this stage, added any optimizations, so the rendered image is relatively slow to converge. As per the original smallpt, to arrive at a completely noise-free image can require around 25k iterations, which, for the default image size, can take around 12 hours on a modern PC.
 
 # Usage
 
