@@ -15,7 +15,7 @@ case class Diffuse(colour : RGB, emColour : RGB, emis : Boolean = false) extends
         p : Point3,
         n : Vector3,
         nl : Vector3
-     ) = {
+    ) = {
         val r1 = 2.0 * math.Pi * rng()
         val r2 = rng()
         val r2s = math.sqrt(r2)
@@ -67,15 +67,10 @@ case class Refractive(colour : RGB, emColour : RGB) extends Material {
             val rp = re / q
             val tp = tr / (1.0 - q)
 
-            if (depth > 2) {
-                if (rng() < q) {
-                    rdr.radiance(rng, reflRay, depth) * rp
-                } else {
-                    rdr.radiance(rng, Ray(p, tdir), depth) * tp
-                }
+            if (rng() < q) {
+                rdr.radiance(rng, reflRay, depth) * rp
             } else {
-                rdr.radiance(rng, reflRay, depth) * re +
-                    rdr.radiance(rng, Ray(p, tdir), depth) * tr
+                rdr.radiance(rng, Ray(p, tdir), depth) * tp
             }
         }
     }

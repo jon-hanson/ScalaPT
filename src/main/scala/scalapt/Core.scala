@@ -176,7 +176,7 @@ trait Renderer {
             cy * (ys / height - 0.5)
 
     def render(rng : RandomNumGen, x : Int, y : Int) : SuperSamp = {
-        def subRad(cx : Double, cy : Double) = {
+        def subPixelRad(cx : Double, cy : Double) = {
             val dx = MathUtil.tent(rng())
             val dy = MathUtil.tent(rng())
             val sx = x + (0.5 + cx + dx) * 0.5
@@ -187,7 +187,10 @@ trait Renderer {
             radiance(rng, ray, 0)
         }
 
-        SuperSamp(subRad(0, 0), subRad(1, 0), subRad(0, 1), subRad(1, 1))
+        SuperSamp(
+            subPixelRad(0, 0), subPixelRad(1, 0),
+            subPixelRad(0, 1), subPixelRad(1, 1)
+        )
     }
 
     def radiance(
