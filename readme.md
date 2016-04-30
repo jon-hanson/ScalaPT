@@ -33,16 +33,17 @@ Once built, run the `scalapt.MainFrame` class, which accepts the following optio
 
 Parameter | Default | Description
 ----|----|----
-name | Cornell | Scene name.
+inFile | scenes/cornell2.json | Filename for scene description in JSON format.
 width | 1024 | Width in pixels of rendered image.
 height | 768 | Height in pixels of rendered image.
 frames | 1024 | Number of frames to render.
 outFile | | Filename to save final image to.
 
-For the output filename, the format is inferred from the suffix.
-Supported format types are those supported by the Java [ImageIO](https://docs.oracle.com/javase/8/docs/api/javax/imageio/ImageIO.html) write method,
+* Sample scenes are provided in the scenes sub-directory.
+* For the output filename, the format is inferred from the suffix.
+  * Supported format types are those supported by the Java [ImageIO](https://docs.oracle.com/javase/8/docs/api/javax/imageio/ImageIO.html) write method,
 which, at present, includes JPG, GIF and PNG.
-If the file has no suffix then it defaults to PNG.
+  * If the file has no suffix then it defaults to PNG.
 
 # Notes
 
@@ -51,3 +52,4 @@ ScalaPT differs from the original in several places:
 * Each frame (or iteration) is rendered before the next, and merged into the last, to allow the image to be displayed as it is progressively refined.
 * The original had what looked like a bug, whereby a bright light path could become trapped inside the glass sphere. The Russian roulette termination would not terminate the path as the path brightness was too high, which eventually caused a stack overflow. ScalaPT addresses this by increasing the chance of termination as the call stack depth increases.
 * Infinite, one-way planes are used in place of giant spheres for the box walls.
+* Scene definitions can be read from a JSON file.
