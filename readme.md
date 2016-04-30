@@ -7,7 +7,7 @@ ScalaPT
 
 ScalaPT is a rewrite of Kevin Beason's [smallpt](http://www.kevinbeason.com/smallpt/) global illumination renderer in Scala.
 
-Smallpt (and therefore ScalaPT) solves the Light Transport equation via a Monte Carlo approach, whereby multiple light paths are fired per pixel and averaged over. Each path is traced through the scene as it bounces off various surfaces. The incoming ray for each bounce is chosen at random, governed by the bidirectional reflectance distribution function (BRDF) for the material of the surface in question.
+Smallpt (and therefore ScalaPT) solves the [Rendering Equation](https://en.wikipedia.org/wiki/Rendering_equation) using a [Monte Carlo](https://en.wikipedia.org/wiki/Monte_Carlo_method) approach, whereby multiple light paths are fired per pixel and averaged over. Each path is traced through the scene as it bounces off various surfaces. The incoming ray for each bounce is chosen at random, governed by the bidirectional reflectance distribution function (BRDF) for the material of the surface in question.
 
 This approach, while slow to converge, is a relatively simple means of obtaining photorealistic images, which include natural effects such as ambient occlusion, light bleeding, reflections, refraction and caustics.
 
@@ -23,7 +23,7 @@ While the application is running it displays a window containing the image as it
 
 <img src="https://github.com/jon-hanson/ScalaPT/blob/master/examples/screenshot.png" width="256">
 
-Note, I haven't, at this stage, added any optimizations, so the rendered image is slow to converge. As per the original smallpt, to arrive at a completely noise-free image can require around 25k iterations, which, for the default image size, can take around 12 hours on a modern PC.
+Note, I haven't, at this stage, added any optimizations, so the rendered image is relatively slow to converge. As per the original smallpt, to arrive at a completely noise-free image can require around 25k iterations, which, for the default image size, can take around 12 hours on a modern PC.
 
 # Usage
 
