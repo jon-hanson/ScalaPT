@@ -21,7 +21,7 @@ object Codecs {
     final val SphereName = "Sphere"
 
     def withType(json : Json, name : String) : Json =
-        json.mapObject(jo => jo.add(TypeName, name.asJson))
+        json.mapObject(jo => jo.+:(TypeName, name.asJson))
 
     implicit val decodeAxis : Decoder[Axis.Type] =
         Decoder.instance(c =>

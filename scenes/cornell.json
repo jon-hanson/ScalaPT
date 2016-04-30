@@ -16,8 +16,10 @@
     },
     "shapes" : [
         {
+            "type" : "Plane",
             "name" : "left",
             "material" : {
+                "type" : "Diffuse",
                 "colour" : {
                     "red" : 0.75,
                     "green" : 0.25,
@@ -28,17 +30,17 @@
                     "green" : 0.0,
                     "blue" : 0.0
                 },
-                "emis" : false,
-                "type" : "Diffuse"
+                "emis" : false
             },
             "side" : "X",
             "posFacing" : true,
-            "v" : 1.0,
-            "type" : "Plane"
+            "v" : 1.0
         },
         {
+            "type" : "Plane",
             "name" : "right",
             "material" : {
+                "type" : "Diffuse",
                 "colour" : {
                     "red" : 0.25,
                     "green" : 0.25,
@@ -49,17 +51,17 @@
                     "green" : 0.0,
                     "blue" : 0.0
                 },
-                "emis" : false,
-                "type" : "Diffuse"
+                "emis" : false
             },
             "side" : "X",
             "posFacing" : false,
-            "v" : 99.0,
-            "type" : "Plane"
+            "v" : 99.0
         },
         {
+            "type" : "Plane",
             "name" : "back",
             "material" : {
+                "type" : "Diffuse",
                 "colour" : {
                     "red" : 0.75,
                     "green" : 0.75,
@@ -70,17 +72,17 @@
                     "green" : 0.0,
                     "blue" : 0.0
                 },
-                "emis" : false,
-                "type" : "Diffuse"
+                "emis" : false
             },
             "side" : "Z",
             "posFacing" : true,
-            "v" : 0.0,
-            "type" : "Plane"
+            "v" : 0.0
         },
         {
+            "type" : "Plane",
             "name" : "front",
             "material" : {
+                "type" : "Diffuse",
                 "colour" : {
                     "red" : 0.0,
                     "green" : 0.0,
@@ -91,17 +93,17 @@
                     "green" : 0.0,
                     "blue" : 0.0
                 },
-                "emis" : false,
-                "type" : "Diffuse"
+                "emis" : false
             },
             "side" : "Z",
             "posFacing" : false,
-            "v" : 170.0,
-            "type" : "Plane"
+            "v" : 170.0
         },
         {
+            "type" : "Plane",
             "name" : "bottom",
             "material" : {
+                "type" : "Diffuse",
                 "colour" : {
                     "red" : 0.75,
                     "green" : 0.75,
@@ -112,17 +114,17 @@
                     "green" : 0.0,
                     "blue" : 0.0
                 },
-                "emis" : false,
-                "type" : "Diffuse"
+                "emis" : false
             },
             "side" : "Y",
             "posFacing" : true,
-            "v" : 0.0,
-            "type" : "Plane"
+            "v" : 0.0
         },
         {
+            "type" : "Plane",
             "name" : "top",
             "material" : {
+                "type" : "Diffuse",
                 "colour" : {
                     "red" : 0.75,
                     "green" : 0.75,
@@ -133,17 +135,17 @@
                     "green" : 0.0,
                     "blue" : 0.0
                 },
-                "emis" : false,
-                "type" : "Diffuse"
+                "emis" : false
             },
             "side" : "Y",
             "posFacing" : false,
-            "v" : 81.6,
-            "type" : "Plane"
+            "v" : 81.6
         },
         {
+            "type" : "Sphere",
             "name" : "mirror",
             "material" : {
+                "type" : "Reflective",
                 "colour" : {
                     "red" : 0.999,
                     "green" : 0.999,
@@ -153,20 +155,20 @@
                     "red" : 0.0,
                     "green" : 0.0,
                     "blue" : 0.0
-                },
-                "type" : "Reflective"
+                }
             },
             "centre" : {
                 "x" : 27.0,
                 "y" : 16.5,
                 "z" : 47.0
             },
-            "radius" : 16.5,
-            "type" : "Sphere"
+            "radius" : 16.5
         },
         {
+            "type" : "Sphere",
             "name" : "glass",
             "material" : {
+                "type" : "Refractive",
                 "colour" : {
                     "red" : 0.999,
                     "green" : 0.999,
@@ -176,20 +178,20 @@
                     "red" : 0.0,
                     "green" : 0.0,
                     "blue" : 0.0
-                },
-                "type" : "Refractive"
+                }
             },
             "centre" : {
                 "x" : 73.0,
                 "y" : 16.5,
                 "z" : 78.0
             },
-            "radius" : 16.5,
-            "type" : "Sphere"
+            "radius" : 16.5
         },
         {
+            "type" : "Sphere",
             "name" : "light",
             "material" : {
+                "type" : "Diffuse",
                 "colour" : {
                     "red" : 0.0,
                     "green" : 0.0,
@@ -200,16 +202,14 @@
                     "green" : 12.0,
                     "blue" : 12.0
                 },
-                "emis" : true,
-                "type" : "Diffuse"
+                "emis" : true
             },
             "centre" : {
                 "x" : 50.0,
                 "y" : 681.33,
                 "z" : 81.6
             },
-            "radius" : 600.0,
-            "type" : "Sphere"
+            "radius" : 600.0
         }
     ]
 }
