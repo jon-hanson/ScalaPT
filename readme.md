@@ -8,9 +8,9 @@ ScalaPT
 ScalaPT is a rewrite of Kevin Beason's [smallpt](http://www.kevinbeason.com/smallpt/) global illumination renderer in Scala.
 The code was rewritten with several goals in mind:
 
-* Port to Scala.
+* Port to Scala. The Scala code has been rewritten to be more idiomatic and avoid mutable data where possible.
 * Make the underlying implementation more readily understandable (the original code was designed to be as short as possible).
-* Render each frame of the image progressively (the original redered each pixel completely before moving onto the next).
+* Render each frame of the image progressively (the original rendered each pixel completely before moving onto the next).
 
 While the application is running it displays a window containing the image as it renders:
 
