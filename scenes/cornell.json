@@ -1,0 +1,215 @@
+{
+    "camera" : {
+        "ray" : {
+            "dir" : {
+                "x" : 0.0,
+                "y" : -0.04257336554299295,
+                "z" : -0.9990933432599491
+            },
+            "origin" : {
+                "x" : 50.0,
+                "y" : 52.0,
+                "z" : 295.6
+            }
+        },
+        "fov" : 0.5135
+    },
+    "shapes" : [
+        {
+            "name" : "left",
+            "material" : {
+                "colour" : {
+                    "red" : 0.75,
+                    "green" : 0.25,
+                    "blue" : 0.25
+                },
+                "emColour" : {
+                    "red" : 0.0,
+                    "green" : 0.0,
+                    "blue" : 0.0
+                },
+                "emis" : false,
+                "type" : "Diffuse"
+            },
+            "side" : "X",
+            "posFacing" : true,
+            "v" : 1.0,
+            "type" : "Plane"
+        },
+        {
+            "name" : "right",
+            "material" : {
+                "colour" : {
+                    "red" : 0.25,
+                    "green" : 0.25,
+                    "blue" : 0.75
+                },
+                "emColour" : {
+                    "red" : 0.0,
+                    "green" : 0.0,
+                    "blue" : 0.0
+                },
+                "emis" : false,
+                "type" : "Diffuse"
+            },
+            "side" : "X",
+            "posFacing" : false,
+            "v" : 99.0,
+            "type" : "Plane"
+        },
+        {
+            "name" : "back",
+            "material" : {
+                "colour" : {
+                    "red" : 0.75,
+                    "green" : 0.75,
+                    "blue" : 0.75
+                },
+                "emColour" : {
+                    "red" : 0.0,
+                    "green" : 0.0,
+                    "blue" : 0.0
+                },
+                "emis" : false,
+                "type" : "Diffuse"
+            },
+            "side" : "Z",
+            "posFacing" : true,
+            "v" : 0.0,
+            "type" : "Plane"
+        },
+        {
+            "name" : "front",
+            "material" : {
+                "colour" : {
+                    "red" : 0.0,
+                    "green" : 0.0,
+                    "blue" : 0.0
+                },
+                "emColour" : {
+                    "red" : 0.0,
+                    "green" : 0.0,
+                    "blue" : 0.0
+                },
+                "emis" : false,
+                "type" : "Diffuse"
+            },
+            "side" : "Z",
+            "posFacing" : false,
+            "v" : 170.0,
+            "type" : "Plane"
+        },
+        {
+            "name" : "bottom",
+            "material" : {
+                "colour" : {
+                    "red" : 0.75,
+                    "green" : 0.75,
+                    "blue" : 0.75
+                },
+                "emColour" : {
+                    "red" : 0.0,
+                    "green" : 0.0,
+                    "blue" : 0.0
+                },
+                "emis" : false,
+                "type" : "Diffuse"
+            },
+            "side" : "Y",
+            "posFacing" : true,
+            "v" : 0.0,
+            "type" : "Plane"
+        },
+        {
+            "name" : "top",
+            "material" : {
+                "colour" : {
+                    "red" : 0.75,
+                    "green" : 0.75,
+                    "blue" : 0.75
+                },
+                "emColour" : {
+                    "red" : 0.0,
+                    "green" : 0.0,
+                    "blue" : 0.0
+                },
+                "emis" : false,
+                "type" : "Diffuse"
+            },
+            "side" : "Y",
+            "posFacing" : false,
+            "v" : 81.6,
+            "type" : "Plane"
+        },
+        {
+            "name" : "mirror",
+            "material" : {
+                "colour" : {
+                    "red" : 0.999,
+                    "green" : 0.999,
+                    "blue" : 0.999
+                },
+                "emColour" : {
+                    "red" : 0.0,
+                    "green" : 0.0,
+                    "blue" : 0.0
+                },
+                "type" : "Reflective"
+            },
+            "centre" : {
+                "x" : 27.0,
+                "y" : 16.5,
+                "z" : 47.0
+            },
+            "radius" : 16.5,
+            "type" : "Sphere"
+        },
+        {
+            "name" : "glass",
+            "material" : {
+                "colour" : {
+                    "red" : 0.999,
+                    "green" : 0.999,
+                    "blue" : 0.999
+                },
+                "emColour" : {
+                    "red" : 0.0,
+                    "green" : 0.0,
+                    "blue" : 0.0
+                },
+                "type" : "Refractive"
+            },
+            "centre" : {
+                "x" : 73.0,
+                "y" : 16.5,
+                "z" : 78.0
+            },
+            "radius" : 16.5,
+            "type" : "Sphere"
+        },
+        {
+            "name" : "light",
+            "material" : {
+                "colour" : {
+                    "red" : 0.0,
+                    "green" : 0.0,
+                    "blue" : 0.0
+                },
+                "emColour" : {
+                    "red" : 12.0,
+                    "green" : 12.0,
+                    "blue" : 12.0
+                },
+                "emis" : true,
+                "type" : "Diffuse"
+            },
+            "centre" : {
+                "x" : 50.0,
+                "y" : 681.33,
+                "z" : 81.6
+            },
+            "radius" : 600.0,
+            "type" : "Sphere"
+        }
+    ]
+}
