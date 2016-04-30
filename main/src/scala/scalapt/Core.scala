@@ -145,8 +145,6 @@ object Scene {
 case class Scene(camera : Camera, shapes : List[Shape]) {
     /**
       * Find the closest shape intersected by the ray.
-      * @param ray
-      * @return closest shape and intersection point
       */
     def intersect(ray : Ray) : Option[(Shape, Point3)] = {
          shapes

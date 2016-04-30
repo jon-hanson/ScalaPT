@@ -39,7 +39,7 @@ class MonteCarloRenderer(
     ) : RGB = {
         scene.intersect(ray) match {
             case None => RGB.black
-            case Some((prim, isect)) => {
+            case Some((prim, isect)) =>
                 val n = prim.normal(isect)
                 val n1 =
                     if (n.dot(ray.dir) < 0)
@@ -67,7 +67,6 @@ class MonteCarloRenderer(
                 }
 
                 prim.material.emission + refl
-            }
         }
     }
 }

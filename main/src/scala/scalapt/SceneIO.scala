@@ -1,13 +1,13 @@
 package scalapt
 
-import io.circe._
-import io.circe.generic.auto._
-import io.circe.parser._
-import io.circe.syntax._
 import java.nio.file.{Files, Paths}
 import java.util.NoSuchElementException
 
 import cats.data.Xor
+import io.circe._
+import io.circe.generic.auto._
+import io.circe.parser._
+import io.circe.syntax._
 
 object Codecs {
 
@@ -19,6 +19,9 @@ object Codecs {
 
     final val PlaneName = "Plane"
     final val SphereName = "Sphere"
+
+    def withType(json : Json, name : String) : Json =
+        json.mapObject(jo => jo.add(TypeName, name.asJson))
 
     implicit val decodeAxis : Decoder[Axis.Type] =
         Decoder.instance(c =>
@@ -35,6 +38,11 @@ object Codecs {
             }
         )
 
+    implicit val encodeAxis : Encoder[Axis.Type] =
+        Encoder.instance(axis =>
+            axis.toString.asJson
+        )
+
     implicit val decodeMaterial : Decoder[Material] =
         Decoder.instance(c =>
             c.downField(TypeName).as[String].flatMap {
@@ -44,6 +52,13 @@ object Codecs {
             }
         )
 
+    implicit val encodeMaterial : Encoder[Material] =
+        Encoder.instance {
+            case (d: Diffuse) => withType(d.asJson, DiffuseName)
+            case (r: Reflective) => withType(r.asJson, ReflectiveName)
+            case (r: Refractive) => withType(r.asJson, RefractiveName)
+        }
+
     implicit val decodeShape : Decoder[Shape] =
         Decoder.instance(c =>
             c.downField(TypeName).as[String].flatMap {
@@ -52,33 +67,15 @@ object Codecs {
             }
         )
 
-    def withType(json : Json, name : String) : Json =
-        json.mapObject(jo => jo.add(TypeName, name.asJson))
-
-    implicit val encodeAxis : Encoder[Axis.Type] =
-        Encoder.instance(axis =>
-            axis.toString.asJson
-    )
-
-    implicit val encodeMaterial : Encoder[Material] =
-        Encoder.instance(material =>
-            material match {
-                case (d : Diffuse) => withType(d.asJson, DiffuseName)
-                case (r : Reflective) => withType(r.asJson, ReflectiveName)
-                case (r : Refractive) => withType(r.asJson, RefractiveName)
-            }
-        )
-
     implicit val encodeShape : Encoder[Shape] =
-        Encoder.instance(shape =>
-            shape match {
-                case (p : Plane) => withType(p.asJson, PlaneName)
-                case (s : Sphere) => withType(s.asJson, SphereName)
-            }
-        )
+        Encoder.instance {
+            case (p: Plane) => withType(p.asJson, PlaneName)
+            case (s: Sphere) => withType(s.asJson, SphereName)
+        }
 }
 
 object SceneIO {
+
     import Codecs._
 
     def load(fileName : String) : Scene = {
