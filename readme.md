@@ -16,6 +16,8 @@ While the application is running it displays a window containing the image as it
 
 <img src="https://github.com/jon-hanson/ScalaPT/blob/master/examples/screenshot.png" width="256">
 
+Note, I haven't, at this stage, added any optimizations, so the rendered image is slow to converge. As per the original smallpt, to arrive at a completely noise-free image can require around 25k iterations, which, for the default image size, can take around 12 hours on a modern PC.
+
 # Usage
 
 The project is written entirely in Scala and builds with the supplied SBT build file.
