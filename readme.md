@@ -49,7 +49,7 @@ which, at present, includes JPG, GIF and PNG.
 
 ScalaPT differs from the original in several places:
 
-* Each frame (or iteration) is rendered before the next, and merged into the last, to allow the image to be displayed as it is progressively refined.
+* Each frame (or iteration) is rendered before the next, and merged into the aggregated result, to allow the image to be displayed as it is progressively refined.
 * The original had what looked like a bug, whereby a bright light path could become trapped inside the glass sphere. The Russian roulette termination would not terminate the path as the path brightness was too high, which eventually caused a stack overflow. ScalaPT addresses this by increasing the chance of termination as the call stack depth increases.
 * Infinite, one-way planes are used in place of giant spheres for the box walls.
 * Scene definitions can be read from a JSON file.
