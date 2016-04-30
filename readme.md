@@ -6,11 +6,14 @@ ScalaPT
 ![Screenshot](https://github.com/jon-hanson/ScalaPT/blob/master/examples/cornell2.png)
 
 ScalaPT is a rewrite of Kevin Beason's [smallpt](http://www.kevinbeason.com/smallpt/) global illumination renderer in Scala.
+
+Smallpt (and therefore ScalaPT) solves the Light Transport equation via a Monte Carlo approach, whereby multiple light paths are fired per pixel and averaged over. Each path is traced through the scene as it bounces off various surfaces. The incoming ray for each bounce is chosen at random, governed by the bidirectional reflectance distribution function (BRDF), which itself is determined by the material of the surface in question. This gives rise to photorealistic images.
+
 The code was rewritten with several goals in mind:
 
 * Port to Scala. The Scala code has been rewritten to be more idiomatic and avoid mutable data where possible.
 * Make the underlying implementation more readily understandable (the original code was designed to be as short as possible).
-* Render each frame of the image progressively (the original rendered each pixel completely before moving onto the next).
+* Render each frame (i.e. each iteration) of the image progressively (the original rendered each pixel completely before moving onto the next).
 
 Consequently, the source code lacks the brevity of the original - it's probably around 1k lines in total, so about 10 times longer.
 
