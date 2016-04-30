@@ -12,6 +12,8 @@ The code was rewritten with several goals in mind:
 * Make the underlying implementation more readily understandable (the original code was designed to be as short as possible).
 * Render each frame of the image progressively (the original rendered each pixel completely before moving onto the next).
 
+Consequently, the source code lacks the brevity of the original - it's probably about 1k lines in total, so about 10 times longer.
+
 While the application is running it displays a window containing the image as it renders:
 
 <img src="https://github.com/jon-hanson/ScalaPT/blob/master/examples/screenshot.png" width="256">
@@ -36,3 +38,11 @@ For the output filename, the format is inferred from the suffix.
 Supported format types are those supported by the Java [ImageIO](https://docs.oracle.com/javase/8/docs/api/javax/imageio/ImageIO.html) write method,
 which, at present, includes JPG, GIF and PNG.
 If the file has no suffix then it defaults to PNG.
+
+# Notes
+
+ScalaPT differs from the original in several places:
+
+* Each frame (or iteration) is rendered before the next, and merged into the last, to allow the image to be displayed as it is progressively refined.
+* The original had what looked like a bug, whereby a bright light path could become trapped inside the glass sphere. The Russian roulette termination would not terminate the path as the path brightness was too high, which eventually caused a stack overflow. ScalaPT addresses this by increasing the chance of termination as the call stack depth increases.
+* Infinite, one-way planes are used in place of giant spheres for the box walls.
