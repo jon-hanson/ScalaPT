@@ -12,7 +12,7 @@ The code was rewritten with several goals in mind:
 * Make the underlying implementation more readily understandable (the original code was designed to be as short as possible).
 * Render each frame of the image progressively (the original rendered each pixel completely before moving onto the next).
 
-Consequently, the source code lacks the brevity of the original - it's probably about 1k lines in total, so about 10 times longer.
+Consequently, the source code lacks the brevity of the original - it's probably around 1k lines in total, so about 10 times longer.
 
 While the application is running it displays a window containing the image as it renders:
 
