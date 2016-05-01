@@ -12,4 +12,4 @@ libraryDependencies ++= Seq(
     "io.circe" %% "circe-parser"
 ).map(_ % circeVersion)
 
-//mainClass in Compile := Some("scalapt.MainFrame")
+mainClass in Compile := Some("scalapt.MainFrame")
