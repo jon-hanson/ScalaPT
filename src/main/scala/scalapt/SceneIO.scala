@@ -26,14 +26,13 @@ object Codecs {
     implicit val decodeAxis : Decoder[Axis.Type] =
         Decoder.instance(c =>
             c.focus.asString match {
-                case Some(s) => {
+                case Some(s) =>
                     try
                         Xor.right(Axis.withName(s))
                     catch {
                         case ex : NoSuchElementException =>
                             Xor.left(DecodingFailure(ex.getMessage, c.history))
                     }
-                }
                 case None => Xor.left(DecodingFailure("String", c.history))
             }
         )

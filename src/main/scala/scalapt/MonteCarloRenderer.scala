@@ -2,6 +2,8 @@ package scalapt
 
 import java.util.concurrent.TimeUnit
 
+import cats.data.State
+
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, ExecutionContext, Future}
 
@@ -33,12 +35,11 @@ class MonteCarloRenderer(
 ) extends Renderer {
 
     override def radiance(
-        rng : RandomNumGen,
         ray : Ray,
         depth : Integer
-    ) : RGB = {
+    ) : RNG.Type[RGB] = {
         scene.intersect(ray) match {
-            case None => RGB.black
+            case None => State.pure(RGB.black)
             case Some((prim, isect)) =>
                 val n = prim.normal(isect)
                 val n1 =
@@ -49,24 +50,25 @@ class MonteCarloRenderer(
 
                 val newDepth = depth + 1
 
-                val refl = {
+                val refl : RNG.Type[RGB] = {
                     val colour = prim.material.colour
 
-                    val lazyCol = () => prim.material.radiance(this, rng, ray, newDepth, isect, n, n1) * colour
                     if (newDepth > 5) {
                         // Modified Russian roulette.
                         val max = colour.max * MathUtil.sqr(1.0 - depth / Renderer.MaxDepth)
-                        if (rng() >= max) {
-                            RGB.black
-                        } else {
-                            lazyCol() / max
-                        }
+                        RNG.nextDouble.flatMap(rnd => {
+                            if (rnd >= max) {
+                                State.pure(RGB.black)
+                            } else {
+                                prim.material.radiance(this, ray, newDepth, isect, n, n1).map(r => r * colour / max)
+                            }
+                        })
                     } else {
-                        lazyCol()
+                        prim.material.radiance(this, ray, newDepth, isect, n, n1).map(r => r * colour)
                     }
                 }
 
-                prim.material.emission + refl
+                refl.map(r => prim.material.emission + r)
         }
     }
 }

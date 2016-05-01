@@ -1,5 +1,7 @@
 package scalapt
 
+import cats.data.State
+
 object MathUtil {
 
     /**
@@ -94,13 +96,12 @@ trait Material {
 
     def radiance(
         rdr : Renderer,
-        rng : RandomNumGen,
         ray : Ray,
         depth : Integer,
         p : Point3,
         n : Vector3,
         nl : Vector3
-    ) : RGB
+    ) : RNG.Type[RGB]
 }
 
 /**
@@ -164,9 +165,9 @@ object Renderer {
 }
 
 trait Renderer {
-    def width : Integer
-    def height : Integer
-    def scene : Scene
+    val width : Integer
+    val height : Integer
+    val scene : Scene
 
     private val cx = Vector3(width * scene.camera.fov / height, 0.0, 0.0)
     private val cy = cx.cross(scene.camera.ray.dir).normalise * scene.camera.fov
@@ -175,27 +176,32 @@ trait Renderer {
         cx * (xs / width - 0.5) +
             cy * (ys / height - 0.5)
 
-    def render(rng : RandomNumGen, x : Int, y : Int) : SuperSamp = {
-        def subPixelRad(cx : Double, cy : Double) = {
-            val dx = MathUtil.tent(rng())
-            val dy = MathUtil.tent(rng())
-            val sx = x + (0.5 + cx + dx) * 0.5
-            val sy = y + (0.5 + cy + dy) * 0.5
-            val dir = scene.camera.ray.dir + camRay(sx, sy)
-            val origin = scene.camera.ray.origin
-            val ray = Ray(origin, dir)
-            radiance(rng, ray, 0)
+    def render(x : Int, y : Int) : RNG.Type[SuperSamp] = {
+        def subPixelRad(cx : Double, cy : Double) : RNG.Type[RGB] = {
+            RNG.nextDouble.flatMap(d1 => {
+                RNG.nextDouble.flatMap(d2 => {
+                    val dx = MathUtil.tent(d1)
+                    val dy = MathUtil.tent(d2)
+                    val sx = x + (0.5 + cx + dx) * 0.5
+                    val sy = y + (0.5 + cy + dy) * 0.5
+                    val dir = scene.camera.ray.dir + camRay(sx, sy)
+                    val origin = scene.camera.ray.origin
+                    val ray = Ray(origin, dir)
+                    radiance(ray, 0)
+                })
+            })
         }
 
-        SuperSamp(
-            subPixelRad(0, 0), subPixelRad(1, 0),
-            subPixelRad(0, 1), subPixelRad(1, 1)
-        )
+        for {
+            aa <- subPixelRad(0, 0)
+            ba <- subPixelRad(1, 0)
+            ab <- subPixelRad(0, 1)
+            bb <- subPixelRad(1, 1)
+        } yield SuperSamp(aa, ba, ab, bb)
     }
 
     def radiance(
-        rng : RandomNumGen,
         ray : Ray,
         depth : Integer
-    ) : RGB
+    ) : RNG.Type[RGB]
 }

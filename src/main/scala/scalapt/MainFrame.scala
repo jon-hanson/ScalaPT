@@ -59,7 +59,7 @@ class MainFrame(
 
             System.out.print(x + " : " + y + " -> ")
 
-            val ss = rdr.render(rng, x, y)
+            val ss = rdr.render(x, y).runA(Random.randDouble(x+y*rdr.width)).value
             System.out.println(ss)
         }
     })
@@ -70,7 +70,6 @@ class MainFrame(
 
     val rdr = new MonteCarloRenderer(w, h, scene)
 
-    val rng = new ThreadSafeRNG(seed => new RandomLCG(seed))
     val renderData = new Array[Array[SuperSamp]](h)
 
     val image = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB)
@@ -82,7 +81,6 @@ class MainFrame(
 
     for (i <- 0 until frames) {
         if (!closing) {
-            System.out.println(LocalDateTime.now() + " : Frame " + i)
             render(i)
         }
     }
@@ -105,10 +103,12 @@ class MainFrame(
     })
 
     def render(i : Int) = {
+        System.out.println(LocalDateTime.now() + " : Frame " + i)
         ConcurrentUtils.parallelFor (0 until rdr.height) { y =>
             val row = new Array[SuperSamp](rdr.width)
             for (x <- 0 until rdr.width) {
-                row(x) = rdr.render(rng, x, y)
+                val seed = (x+y*rdr.width)*(i+1)
+                row(x) = rdr.render(x, y).runA(Random.randDouble(seed)).value
             }
 
             if (i == 0)
@@ -120,9 +120,9 @@ class MainFrame(
 
             val sy = h - y - 1
             for (sx <- 0 until w) {
-                if (mergedRow(sx) != null)
-                    image.setRGB(sx, sy, colVecToInt(mergedRow(sx).clamp))
+                image.setRGB(sx, sy, colVecToInt(mergedRow(sx).clamp))
             }
+
             repaint(ins.left, ins.top + sy, w, 1)
         }
     }
@@ -134,10 +134,9 @@ class MainFrame(
     }
 
     private def colVecToInt(colour : RGB) : Int = {
-        val c = colDblToInt(colour.blue) |
+        colDblToInt(colour.blue) |
             (colDblToInt(colour.green) << 8) |
             (colDblToInt(colour.red) << 16)
-        c
     }
 
     private def colDblToInt(d : Double) : Int = {

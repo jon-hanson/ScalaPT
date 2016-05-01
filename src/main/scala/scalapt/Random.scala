@@ -2,11 +2,17 @@ package scalapt
 
 import java.util.concurrent.atomic.AtomicInteger
 
-trait RandomNumGen {
-    def nextDouble() : Double
+import cats.data.{State, StateT}
 
-    def apply() : Double =
-        nextDouble()
+trait RNG[T] {
+    def next : (RNG[T], T)
+}
+
+object RNG {
+    type Type[T] = State[RNG[Double], T]
+
+    def nextDouble : Type[Double] =
+        State(rng => rng.next)
 }
 
 object RandomLCG {
@@ -16,24 +22,46 @@ object RandomLCG {
     final val Scale = Int.MaxValue.toDouble - Int.MinValue.toDouble + 1.0
 }
 
-class RandomLCG(var seed : Long) extends RandomNumGen {
+case class RandomLCG(seed : Long = 0) extends RNG[Double] {
     import RandomLCG._
 
-    def nextDouble(): Double = {
-        seed = (Mult * seed + Inc) % Mod
-        seed / Scale
+    override def next : (RNG[Double], Double) = {
+        val seed2 = (Mult * seed + Inc) % Mod
+        (RandomLCG(seed2), seed2 / Scale)
     }
 }
 
-class ThreadSafeRNG(private val rngGen : Int => RandomNumGen) extends RandomNumGen {
+case class XorShiftRNG(seed : Long) extends RNG[Long] {
+    import XorShiftRNG._
 
-    val seed = new AtomicInteger()
-
-    val random = new ThreadLocal[RandomNumGen]() {
-        override def initialValue() : RandomNumGen = rngGen(seed.incrementAndGet())
+    override def next : (RNG[Long], Long) = {
+        val a = seed ^ (seed >>> 12)
+        val b = a ^ (a << 25)
+        val c = b ^ (b >>> 27)
+        val d = if (c == 0) -1 else c
+        (XorShiftRNG(d), d * 2685821657736338717L)
     }
+}
 
-    override def nextDouble() : Double = {
-        random.get().nextDouble()
+object DoubleRNG {
+    final val Scale = Long.MaxValue.toDouble - Long.MinValue.toDouble + 1.0
+    final val Mod = 1L << 64
+}
+
+case class DoubleRNG(rng : RNG[Long]) extends RNG[Double] {
+    import DoubleRNG._
+
+    override def next: (RNG[Double], Double) = {
+        val (rng2, rl) = rng.next
+        val dl = (rl.toDouble - Long.MinValue.toDouble) / Scale
+        (DoubleRNG(rng2), dl)
     }
+}
+
+object Random {
+    def randLong(seed: Long) : RNG[Long] =
+        XorShiftRNG(seed)
+
+    def randDouble(seed : Long) : RNG[Double] =
+        DoubleRNG(XorShiftRNG(seed))
 }

@@ -7,9 +7,18 @@ ScalaPT
 
 ScalaPT is a rewrite of Kevin Beason's [smallpt](http://www.kevinbeason.com/smallpt/) global illumination renderer in Scala.
 
-Smallpt (and therefore ScalaPT) solves the [Rendering Equation](https://en.wikipedia.org/wiki/Rendering_equation) using a [Monte Carlo](https://en.wikipedia.org/wiki/Monte_Carlo_method) approach, whereby multiple light paths are fired per pixel and averaged over. Each path is traced through the scene as it bounces off various surfaces. The incoming ray for each bounce is chosen at random, governed by the [bidirectional distribution functions](https://en.wikipedia.org/wiki/Bidirectional_scattering_distribution_function) for the material of the surface in question.
+Smallpt (and therefore ScalaPT) solves the [Rendering Equation](https://en.wikipedia.org/wiki/Rendering_equation)
+using a [Monte Carlo](https://en.wikipedia.org/wiki/Monte_Carlo_method) approach,
+whereby multiple light paths are fired per pixel and averaged over.
+Each path is traced through the scene as it bounces off various surfaces.
+The incoming ray for each bounce is chosen at random,
+governed by the [bidirectional distribution functions](https://en.wikipedia.org/wiki/Bidirectional_scattering_distribution_function)
+for the material of the surface in question.
 
-This approach, while slow to converge, is a relatively simple means of obtaining photorealistic images, which include natural effects such as ambient occlusion, light bleeding, reflections, refraction and caustics.
+This approach, while slow to converge,
+is a relatively simple means of obtaining photorealistic images,
+which include natural effects such as ambient occlusion, light bleeding,
+reflections, refraction and caustics.
 
 The code was rewritten with several goals in mind:
 
