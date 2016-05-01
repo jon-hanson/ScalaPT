@@ -38,7 +38,7 @@ which, for the default image size, can take several hours on a modern PC.
 
 # Usage
 
-The project is written entirely in Scala and builds with the supplied SBT build file.
+The project is written entirely in Scala (v2.11.8), builds with the supplied SBT (v0.3.11) build file, and runs on Java 1.8.0.
 
 Once built, run the `scalapt.MainFrame` class, which accepts the following optional arguments:
 
