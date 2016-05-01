@@ -5,7 +5,7 @@ ScalaPT
 
 ![Screenshot](https://github.com/jon-hanson/ScalaPT/blob/master/examples/cornell2.png)
 
-ScalaPT is a rewrite of Kevin Beason's [smallpt](http://www.kevinbeason.com/smallpt/) global illumination renderer in Scala.
+ScalaPT is a rewrite in Scala of Kevin Beason's [smallpt](http://www.kevinbeason.com/smallpt/) global illumination renderer.
 
 Smallpt (and therefore ScalaPT) solves the [Rendering Equation](https://en.wikipedia.org/wiki/Rendering_equation)
 using a [Monte Carlo](https://en.wikipedia.org/wiki/Monte_Carlo_method) approach,
@@ -32,7 +32,9 @@ While the application is running it displays a window containing the image as it
 
 <img src="https://github.com/jon-hanson/ScalaPT/blob/master/examples/screenshot.png" width="257">
 
-Note, I haven't, at this stage, added any optimizations, so the rendered image is relatively slow to converge. As per the original smallpt, to arrive at a completely noise-free image can require around 25k iterations, which, for the default image size, can take around 12 hours on a modern PC.
+Note, I haven't, at this stage, added any optimizations, so the rendered image is relatively slow to converge.
+As per the original smallpt, to arrive at a completely noise-free image can require around 25k iterations,
+which, for the default image size, can take several hours on a modern PC.
 
 # Usage
 
@@ -62,3 +64,4 @@ ScalaPT differs from the original in several places:
 * The original had what looked like a bug, whereby a bright light path could become trapped inside the glass sphere. The Russian roulette termination would not terminate the path as the path brightness was too high, which eventually caused a stack overflow. ScalaPT addresses this by increasing the chance of termination as the call stack depth increases.
 * Infinite, one-way planes are used in place of giant spheres for the box walls.
 * Scene definitions can be read from a JSON file.
+* Random number generation replaced with state monad (which wraps a random number generator).
