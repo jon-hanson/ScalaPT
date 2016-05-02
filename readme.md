@@ -70,4 +70,4 @@ ScalaPT differs from the original in several places:
 
 ## "Horizon"
 
-![Horizon](https://github.com/jon-hanson/ScalaPT/blob/master/examples/screenshot.png)
+![Horizon](https://github.com/jon-hanson/ScalaPT/blob/master/examples/horizon.png)
