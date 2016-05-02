@@ -5,6 +5,7 @@ object GenerateScenes {
     def main(args : Array[String]) : Unit = {
         SceneIO.save(Cornell.scene, "scenes/cornell.json")
         SceneIO.save(Cornell2.scene, "scenes/cornell2.json")
+        SceneIO.save(Horizon.scene, "scenes/horizon.json")
     }
 }
 
@@ -61,5 +62,37 @@ object Cornell2 {
                 Point3(50, 52, 295.6),
                 Vector3(0, -0.042612, -1)
             ), 0.5135
+        ), objects)
+}
+
+object Horizon {
+    val W = 100.0
+    val W2 = W * 2.0 / 3.0
+    val D = W / 2.0
+    val R = W / 4.0
+    val R2 = W * 16.0
+    val centre = Point3(0.0, R, 0.0)
+
+    val sky = RGB(135.0/256, 206.0/256, 250.0/256)
+
+    val objects : List[Shape] =
+        List(
+            Plane("ground", Material.diffuse(RGB.white * 0.999), Axis.Y, true, 0.0),
+            Sphere("refl", Material.reflective(RGB.white * 0.999), Point3(0.0, W2, -W2), W2),
+            Sphere("lglass", Material.refractive(0.75, 0.25, 0.25), Point3(-W2, R, W), R),
+            Sphere("rglass", Material.refractive(0.25, 0.75, 0.25), Point3(W2, R, W), R),
+            Sphere("light", Material.emissive(RGB.white * 12.0), centre + Vector3.YUnit * W * 2, R),
+            Sphere("sky", Material.diffuse(sky), Point3(0.0, W * 3 + R2, 0.0), R2)
+        )
+
+    val cam = Point3(0.0, W * 1.5, 4 * W)
+    val lookAt = Point3(0.0, R, 0.0)
+
+    val scene = Scene(
+        Camera(
+            Ray(
+                cam,
+                lookAt - cam
+            ), 0.6
         ), objects)
 }
