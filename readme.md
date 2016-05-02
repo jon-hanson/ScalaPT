@@ -30,7 +30,7 @@ Consequently, the source code lacks the brevity of the original - excluding the 
 
 While the application is running it displays a window containing the image as it renders:
 
-<img src="https://github.com/jon-hanson/ScalaPT/blob/master/examples/screenshot.png" width="257">
+<img src="https://github.com/jon-hanson/ScalaPT/blob/master/examples/screenshot.png" width="257"/>
 
 Note, I haven't, at this stage, added any optimizations, so the rendered image is relatively slow to converge.
 As per the original smallpt, to arrive at a completely noise-free image can require around 25k iterations,
@@ -65,3 +65,9 @@ ScalaPT differs from the original in several places:
 * Infinite, one-way planes are used in place of giant spheres for the box walls.
 * Scene definitions can be read from a JSON file.
 * Random number generation replaced with a state monad (which wraps an XorShift random number generator).
+
+# Examples
+
+## "Horizon"
+
+[[https://github.com/jon-hanson/ScalaPT/blob/master/examples/screenshot.png|alt=horizon]]
