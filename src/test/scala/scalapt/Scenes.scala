@@ -80,7 +80,8 @@ object Horizon {
             Plane("ground", Material.diffuse(RGB.white * 0.999), Axis.Y, true, 0.0),
             Sphere("refl", Material.reflective(RGB.white * 0.999), Point3(0.0, W2, -W2), W2),
             Sphere("lglass", Material.refractive(0.75, 0.25, 0.25), Point3(-W2, R, W), R),
-            Sphere("rglass", Material.refractive(0.25, 0.75, 0.25), Point3(W2, R, W), R),
+            Sphere("mglass", Material.refractive(0.25, 0.75, 0.25), Point3(0, R, W * (3.0 / 2.0)), R),
+            Sphere("rglass", Material.refractive(0.25, 0.25, 0.75), Point3(W2, R, W), R),
             Sphere("light", Material.emissive(RGB.white * 12.0), centre + Vector3.YUnit * W * 2, R),
             Sphere("sky", Material.diffuse(sky), Point3(0.0, W * 3 + R2, 0.0), R2)
         )
@@ -93,6 +94,6 @@ object Horizon {
             Ray(
                 cam,
                 lookAt - cam
-            ), 0.6
+            ), 0.7
         ), objects)
 }

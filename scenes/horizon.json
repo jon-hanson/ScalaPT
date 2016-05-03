@@ -12,7 +12,7 @@
                 "z" : 400.0
             }
         },
-        "fov" : 0.6
+        "fov" : 0.65
     },
     "shapes" : [
         {
@@ -84,13 +84,36 @@
         },
         {
             "type" : "Sphere",
-            "name" : "rglass",
+            "name" : "mglass",
             "material" : {
                 "type" : "Refractive",
                 "colour" : {
                     "red" : 0.25,
                     "green" : 0.75,
                     "blue" : 0.25
+                },
+                "emColour" : {
+                    "red" : 0.0,
+                    "green" : 0.0,
+                    "blue" : 0.0
+                }
+            },
+            "centre" : {
+                "x" : 0.0,
+                "y" : 25.0,
+                "z" : 150.0
+            },
+            "radius" : 25.0
+        },
+        {
+            "type" : "Sphere",
+            "name" : "rglass",
+            "material" : {
+                "type" : "Refractive",
+                "colour" : {
+                    "red" : 0.25,
+                    "green" : 0.25,
+                    "blue" : 0.75
                 },
                 "emColour" : {
                     "red" : 0.0,
