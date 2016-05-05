@@ -1,6 +1,8 @@
 ScalaPT
 ============
 
+Global Illumination in several hundred lines of Scala.
+
 # Introduction
 
 ![Screenshot](https://github.com/jon-hanson/ScalaPT/blob/master/examples/cornell2.png)
@@ -10,7 +12,7 @@ ScalaPT is a rewrite in Scala of Kevin Beason's [smallpt](http://www.kevinbeason
 Smallpt (and therefore ScalaPT) solves the [Rendering Equation](https://en.wikipedia.org/wiki/Rendering_equation)
 using a [Monte Carlo](https://en.wikipedia.org/wiki/Monte_Carlo_method) approach,
 whereby multiple light paths are fired per pixel and averaged over.
-Each path is traced through the scene as it bounces off various surfaces.
+Each path is traced backwards through the scene as it bounces off various surfaces.
 The incoming ray for each bounce is chosen at random,
 governed by the [bidirectional distribution functions](https://en.wikipedia.org/wiki/Bidirectional_scattering_distribution_function)
 for the material of the surface in question.
@@ -61,10 +63,10 @@ which, at present, includes JPG, GIF and PNG.
 ScalaPT differs from the original in several places:
 
 * Each frame (or iteration) is rendered before the next, and merged into the aggregated result, to allow the image to be displayed as it is progressively refined.
-* The original had what looked like a bug, whereby a bright light path could become trapped inside the glass sphere. The Russian Roulette termination would not terminate the path as the path brightness was too high, which eventually led to a stack overflow. ScalaPT addresses this by increasing the chance of termination as the call stack depth increases.
+* The original had what looked like a bug, whereby a bright light path could become trapped inside the glass sphere. The Russian Roulette termination would not terminate the path as the path brightness was too high, which eventually leads to a stack overflow. ScalaPT addresses this by increasing the chance of termination as the call stack depth increases.
 * Infinite, one-way planes are used in place of giant spheres for the box walls.
 * Scene definitions can be read from a JSON file.
-* Random number generation replaced with a state monad (which wraps an XorShift random number generator).
+* Random number generation replaced with a State monad (which wraps an XorShift random number generator).
 
 # Examples
 
