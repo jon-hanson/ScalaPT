@@ -42,7 +42,7 @@ class MonteCarloRenderer(
             case None => State.pure(RGB.black)
             case Some((prim, isect)) =>
                 val n = prim.normal(isect)
-                val n1 =
+                val nl =
                     if (n.dot(ray.dir) < 0)
                         n
                     else
@@ -60,11 +60,11 @@ class MonteCarloRenderer(
                             if (rnd >= max) {
                                 State.pure(RGB.black)
                             } else {
-                                prim.material.radiance(this, ray, newDepth, isect, n, n1).map(r => r * colour / max)
+                                prim.material.radiance(this, ray, newDepth, isect, n, nl).map(r => r * colour / max)
                             }
                         })
                     } else {
-                        prim.material.radiance(this, ray, newDepth, isect, n, n1).map(r => r * colour)
+                        prim.material.radiance(this, ray, newDepth, isect, n, nl).map(r => r * colour)
                     }
                 }
 
