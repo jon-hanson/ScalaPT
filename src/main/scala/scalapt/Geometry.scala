@@ -12,16 +12,6 @@ object Axis extends Enumeration {
   * Point3
   */
 
-object Point3 {
-    final val Zero = Point3(0.0, 0.0, 0.0)
-    final val XUnit = Point3(1.0, 0.0, 0.0)
-    final val YUnit = Point3(0.0, 1.0, 0.0)
-    final val ZUnit = Point3(0.0, 0.0, 1.0)
-
-    val NegInf = new Point3(Double.NegativeInfinity, Double.NegativeInfinity, Double.NegativeInfinity)
-    val PosInf = new Point3(Double.PositiveInfinity, Double.PositiveInfinity, Double.PositiveInfinity)
-}
-
 case class Point3(x : Double, y : Double, z : Double) {
 
     def apply(i : Int) : Double =
@@ -81,22 +71,19 @@ case class Point3(x : Double, y : Double, z : Double) {
         Vector3(x, y, z)
 }
 
+object Point3 {
+    final val Zero = Point3(0.0, 0.0, 0.0)
+    final val XUnit = Point3(1.0, 0.0, 0.0)
+    final val YUnit = Point3(0.0, 1.0, 0.0)
+    final val ZUnit = Point3(0.0, 0.0, 1.0)
+
+    val NegInf = new Point3(Double.NegativeInfinity, Double.NegativeInfinity, Double.NegativeInfinity)
+    val PosInf = new Point3(Double.PositiveInfinity, Double.PositiveInfinity, Double.PositiveInfinity)
+}
+
 /**
   * Vector3
   */
-object Vector3 {
-    final val Zero = Vector3(0.0, 0.0, 0.0)
-    final val XUnit = Vector3(1.0, 0.0, 0.0)
-    final val YUnit = Vector3(0.0, 1.0, 0.0)
-    final val ZUnit = Vector3(0.0, 0.0, 1.0)
-
-    def unit(ax :Axis.Type) : Vector3 =
-        ax match {
-            case Axis.X => XUnit
-            case Axis.Y => YUnit
-            case Axis.Z => ZUnit
-        }
-}
 
 case class Vector3(x : Double, y : Double, z : Double) {
 
@@ -164,4 +151,18 @@ case class Vector3(x : Double, y : Double, z : Double) {
 
     def hasNaNs =
         x.isNaN || y.isNaN || z.isNaN
+}
+
+object Vector3 {
+    final val Zero = Vector3(0.0, 0.0, 0.0)
+    final val XUnit = Vector3(1.0, 0.0, 0.0)
+    final val YUnit = Vector3(0.0, 1.0, 0.0)
+    final val ZUnit = Vector3(0.0, 0.0, 1.0)
+
+    def unit(ax :Axis.Type) : Vector3 =
+        ax match {
+            case Axis.X => XUnit
+            case Axis.Y => YUnit
+            case Axis.Z => ZUnit
+        }
 }

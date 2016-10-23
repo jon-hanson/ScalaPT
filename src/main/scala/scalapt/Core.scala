@@ -1,7 +1,5 @@
 package scalapt
 
-import cats.data.State
-
 object MathUtil {
 
     /**
@@ -47,19 +45,38 @@ object MathUtil {
  * Ray
  */
 
-object Ray {
-    def apply(origin : Point3, dir : Vector3) : Ray =
-        Ray(dir.normalise, origin)
-}
-
 case class Ray private (dir : Vector3, origin : Point3) {
     def apply(t : Double) : Point3 =
         origin + dir * t
 }
 
+object Ray {
+    def apply(origin : Point3, dir : Vector3) : Ray =
+        Ray(dir.normalise, origin)
+}
+
 /**
   * Material
   */
+
+trait Material {
+    val colour : RGB
+
+    val emColour : RGB
+
+    def emission : RGB =
+        emColour
+
+    def radiance(
+        rdr : Renderer,
+        ray : Ray,
+        depth : Integer,
+        p : Point3,
+        n : Vector3,
+        nl : Vector3
+    ) : RNG.Type[RGB]
+}
+
 object Material {
     def diffuse(r : Double, g : Double, b : Double) =
         new Diffuse(RGB(r, g, b), RGB.black)
@@ -86,40 +103,15 @@ object Material {
         new Reflective(colour, RGB.black)
 }
 
-trait Material {
-    val colour : RGB
-
-    val emColour : RGB
-
-    def emission : RGB =
-        emColour
-
-    def radiance(
-        rdr : Renderer,
-        ray : Ray,
-        depth : Integer,
-        p : Point3,
-        n : Vector3,
-        nl : Vector3
-    ) : RNG.Type[RGB]
-}
-
 /**
  * Camera
  */
+
 case class Camera(ray : Ray, fov : Double)
 
 /**
   * Shape
   */
-
-object Shape {
-    /**
-      * Epsilion value to avoid object self-intersections.
-      */
-
-    final val T_EPS : Double = 1e-4
-}
 
 trait Shape {
     // Only required for debugging.
@@ -135,34 +127,66 @@ trait Shape {
     def normal(p : Point3) : Vector3
 }
 
+object Shape {
+    /**
+      * Epsilion value to avoid object self-intersections.
+      */
+
+    final val T_EPS : Double = 1e-4
+}
+
 /**
   * Scene
   */
-
-object Scene {
-    val distance = Ordering.by((_: (Shape, Double))._2)
-}
 
 case class Scene(camera : Camera, shapes : List[Shape]) {
     /**
       * Find the closest shape intersected by the ray.
       */
-    def intersect(ray : Ray) : Option[(Shape, Point3)] = {
+    def intersect(ray : Ray) : Option[(Shape, Point3)] =
          shapes
             .flatMap(obj => obj.intersect(ray).map(t => (obj, t)))
             .reduceOption(Scene.distance.min)
             .map({case(obj, t) => (obj, ray(t))})
+}
+
+object Scene {
+    val distance = Ordering.by((_: (Shape, Double))._2)
+}
+
+/**
+  * Represents a single rendered frame.
+  */
+
+case class Frame(width : Int, height : Int, data : Array[Frame.Row]) {
+
+    def apply(r : Int) : Frame.Row =
+        data(r)
+
+    def apply(r : Int, c : Int) : SuperSamp =
+        data(r)(c)
+
+    def merge(r : Int, rhs : Array[SuperSamp], n : Int): Unit = {
+        val row = data(r)
+        for (i <- row.cells.indices) {
+            row.cells(i) = row(i).merge(rhs(i), n)
+        }
     }
+}
+
+object Frame {
+    case class Row(cells : Array[SuperSamp]) {
+        def apply(r : Int) : SuperSamp =
+            cells(r)
+    }
+
+    def apply(width : Int, height : Int) : Frame =
+        Frame(width, height, new Array[Frame.Row](width))
 }
 
 /**
   * Renderer
   */
-
-object Renderer {
-    // Need a maximum to avoid stack overflow.
-    final val MaxDepth = 200
-}
 
 trait Renderer {
     val width : Integer
@@ -178,18 +202,18 @@ trait Renderer {
 
     def render(x : Int, y : Int) : RNG.Type[SuperSamp] = {
         def subPixelRad(cx : Double, cy : Double) : RNG.Type[RGB] = {
-            RNG.nextDouble.flatMap(d1 => {
-                RNG.nextDouble.flatMap(d2 => {
-                    val dx = MathUtil.tent(d1)
-                    val dy = MathUtil.tent(d2)
-                    val sx = x + (0.5 + cx + dx) * 0.5
-                    val sy = y + (0.5 + cy + dy) * 0.5
-                    val dir = scene.camera.ray.dir + camRay(sx, sy)
-                    val origin = scene.camera.ray.origin
-                    val ray = Ray(origin, dir)
-                    radiance(ray, 0)
-                })
-            })
+            for {
+                d1 <- RNG.nextDouble
+                d2 <- RNG.nextDouble
+                dx = MathUtil.tent(d1)
+                dy = MathUtil.tent(d2)
+                sx = x + (0.5 + cx + dx) * 0.5
+                sy = y + (0.5 + cy + dy) * 0.5
+                dir = scene.camera.ray.dir + camRay(sx, sy)
+                origin = scene.camera.ray.origin
+                ray = Ray(origin, dir)
+                result <- radiance(ray, 0)
+            } yield result
         }
 
         for {
@@ -204,4 +228,10 @@ trait Renderer {
         ray : Ray,
         depth : Integer
     ) : RNG.Type[RGB]
+}
+
+object Renderer {
+    // Need a maximum to avoid stack overflow.
+    // In practice we should never hit it due to the Russian Roulette termination.
+    final val MaxDepth = 200
 }

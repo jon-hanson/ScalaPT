@@ -1,25 +1,14 @@
 package scalapt
 
 import java.awt._
+import java.awt.{Frame => JFrame}
 import java.awt.event.{MouseAdapter, MouseEvent, WindowAdapter, WindowEvent}
 import java.awt.image.BufferedImage
 import java.io.File
 import java.time.LocalDateTime
 import javax.imageio.ImageIO
 
-object MainFrame {
-    def main(args : Array[String]) : Unit = {
-        val inFile = if (args.length > 0) args(0) else "scenes/cornell2.json"
-        val width = if (args.length > 1) Integer.parseInt(args(1)) else 1024
-        val height = if (args.length > 2) Integer.parseInt(args(2)) else 768
-        val frames = if (args.length > 3) Integer.parseInt(args(3)) else 1024
-        val outFile = if (args.length > 4) Option(new File(args(4))) else Option.empty
-
-        val frame = new MainFrame("ScalaPT", width, height, inFile, frames, outFile)
-    }
-}
-
-class MainFrame(
+class Main(
    frameTitle : String,
    val w : Int,
    val h : Int,
@@ -27,7 +16,7 @@ class MainFrame(
    val frames : Int,
    val outFile : Option[File],
    var closing : Boolean = false
-) extends Frame(frameTitle) {
+) extends JFrame(frameTitle) {
 
     System.out.println("Scene: " + inFile)
     System.out.println("Width: " + w)
@@ -70,7 +59,7 @@ class MainFrame(
 
     val rdr = new MonteCarloRenderer(w, h, scene)
 
-    val renderData = new Array[Array[SuperSamp]](h)
+    val renderData = Frame(w, h)
 
     val image = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB)
 
@@ -112,9 +101,9 @@ class MainFrame(
             }
 
             if (i == 0)
-                renderData(y) = row
+                renderData.data(y) = new Frame.Row(row)
             else
-                merge(renderData(y), row, i)
+                renderData.merge(y, row, i)
 
             val mergedRow = renderData(y)
 
@@ -149,5 +138,17 @@ class MainFrame(
         val g2d = graphics.asInstanceOf[Graphics2D]
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF)
         g2d.drawImage(image, ins.left, ins.top, null)
+    }
+}
+
+object Main {
+    def main(args : Array[String]) : Unit = {
+        val inFile = if (args.length > 0) args(0) else "scenes/cornell2.json"
+        val width = if (args.length > 1) Integer.parseInt(args(1)) else 1024
+        val height = if (args.length > 2) Integer.parseInt(args(2)) else 768
+        val frames = if (args.length > 3) Integer.parseInt(args(3)) else 1024
+        val outFile = if (args.length > 4) Option(new File(args(4))) else Option.empty
+
+        val frame = new Main("ScalaPT", width, height, inFile, frames, outFile)
     }
 }

@@ -3,17 +3,6 @@ package scalapt
 /**
   * A triple of colour coefficients.
   */
-object RGB {
-    final val black : RGB = RGB(0.0, 0.0, 0.0)
-    final val white = RGB(1.0, 1.0, 1.0)
-
-    final val red = RGB(1.0, 0.0, 0.0)
-    final val green = RGB(0.0, 1.0, 0.0)
-    final val blue = RGB(0.0, 0.0, 1.0)
-
-    def apply() =
-        black
-}
 
 case class RGB(red : Double, green : Double, blue : Double) {
 
@@ -71,13 +60,22 @@ case class RGB(red : Double, green : Double, blue : Double) {
         math.max(math.max(red, green), blue)
 }
 
+object RGB {
+    final val black : RGB = RGB(0.0, 0.0, 0.0)
+    final val white = RGB(1.0, 1.0, 1.0)
+
+    final val red = RGB(1.0, 0.0, 0.0)
+    final val green = RGB(0.0, 1.0, 0.0)
+    final val blue = RGB(0.0, 0.0, 1.0)
+
+    def apply() =
+        black
+}
+
 /**
   * SuperSamp is a 2x2 grid of colours, used for super-sampling
   * in order improve anti-aliasing.
   */
-object SuperSamp {
-    final val black = SuperSamp(RGB.black, RGB.black, RGB.black, RGB.black)
-}
 
 case class SuperSamp(c00 : RGB, c10 : RGB, c01 : RGB, c11 : RGB) {
 
@@ -102,4 +100,8 @@ case class SuperSamp(c00 : RGB, c10 : RGB, c01 : RGB, c11 : RGB) {
 
     def +(rhs : SuperSamp) : SuperSamp =
         SuperSamp(c00 + rhs.c00, c10 + rhs.c10, c01 + rhs.c01, c11 + rhs.c11)
+}
+
+object SuperSamp {
+    final val black = SuperSamp(RGB.black, RGB.black, RGB.black, RGB.black)
 }

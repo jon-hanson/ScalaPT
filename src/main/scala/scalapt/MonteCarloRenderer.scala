@@ -19,8 +19,9 @@ object ConcurrentUtils {
 
         range
             .sortBy(i => i % processorCount)
-            .grouped(groupSize).toList.map( { subRange =>
-            Future {subRange.foreach { impl(_) }}
+            .grouped(groupSize)
+            .toList.map( { subRange =>
+                Future {subRange.foreach { impl(_) }}
             }).foreach(f => Await.result(f, wait))
     }
 }
@@ -34,7 +35,7 @@ class MonteCarloRenderer(
     val scene : Scene
 ) extends Renderer {
 
-    override def radiance(
+    final override def radiance(
         ray : Ray,
         depth : Integer
     ) : RNG.Type[RGB] = {

@@ -1,8 +1,10 @@
 package scalapt
 
-import java.util.concurrent.atomic.AtomicInteger
+import cats.data.State
 
-import cats.data.{State, StateT}
+/**
+  * Random Number Generator
+  */
 
 trait RNG[T] {
     def next : (RNG[T], T)
@@ -15,12 +17,9 @@ object RNG {
         State(rng => rng.next)
 }
 
-object RandomLCG {
-    final val Mult = 214013L
-    final val Inc = 2531011L
-    final val Mod = 0x100000000L
-    final val Scale = Int.MaxValue.toDouble - Int.MinValue.toDouble + 1.0
-}
+/**
+  * Linear Congruential Generator RNG
+  */
 
 case class RandomLCG(seed : Long = 0) extends RNG[Double] {
     import RandomLCG._
@@ -31,9 +30,18 @@ case class RandomLCG(seed : Long = 0) extends RNG[Double] {
     }
 }
 
-case class XorShiftRNG(seed : Long) extends RNG[Long] {
-    import XorShiftRNG._
+object RandomLCG {
+    final val Mult = 214013L
+    final val Inc = 2531011L
+    final val Mod = 0x100000000L
+    final val Scale = Int.MaxValue.toDouble - Int.MinValue.toDouble + 1.0
+}
 
+/**
+  * Xor Shoft RNG
+  */
+
+case class XorShiftRNG(seed : Long) extends RNG[Long] {
     override def next : (RNG[Long], Long) = {
         val a = seed ^ (seed >>> 12)
         val b = a ^ (a << 25)
@@ -43,10 +51,9 @@ case class XorShiftRNG(seed : Long) extends RNG[Long] {
     }
 }
 
-object DoubleRNG {
-    final val Scale = Long.MaxValue.toDouble - Long.MinValue.toDouble + 1.0
-    final val Mod = 1L << 64
-}
+/**
+  * Convert a RNG of Longs into one of Doubles
+  */
 
 case class DoubleRNG(rng : RNG[Long]) extends RNG[Double] {
     import DoubleRNG._
@@ -58,6 +65,14 @@ case class DoubleRNG(rng : RNG[Long]) extends RNG[Double] {
     }
 }
 
+object DoubleRNG {
+    final val Scale = Long.MaxValue.toDouble - Long.MinValue.toDouble + 1.0
+    final val Mod = 1L << 64
+}
+
+/**
+  * API for requesting RNGs
+  */
 object Random {
     def randLong(seed: Long) : RNG[Long] =
         XorShiftRNG(seed)

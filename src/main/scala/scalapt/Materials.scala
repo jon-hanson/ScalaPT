@@ -10,26 +10,26 @@ case class Diffuse(colour : RGB, emColour : RGB, emis : Boolean = false) extends
 
     override def radiance(
         rdr : Renderer,
-        ray : Ray, depth: Integer,
+        ray : Ray,
+        depth: Integer,
         p : Point3,
         n : Vector3,
         nl : Vector3
     ) : RNG.Type[RGB] = {
-        RNG.nextDouble.flatMap(d1 => {
-            RNG.nextDouble.flatMap(r2 => {
-                val r1 = 2.0 * math.Pi * d1
-                val r2s = math.sqrt(r2)
-                val w = nl
-                val u = (if (math.abs(w.x) > 0.1) Vector3.YUnit else Vector3.XUnit).cross(w).normalise
-                val v = w.cross(u)
-                val d =
-                    (u * math.cos(r1) * r2s
-                        + v * math.sin(r1) * r2s
-                        + w * math.sqrt(1.0 - r2)
-                        ).normalise
-                rdr.radiance(Ray(p, d), depth)
-            })
-        })
+        for {
+            d1 <- RNG.nextDouble
+            r2 <- RNG.nextDouble
+            r1 = 2.0 * math.Pi * d1
+            r2s = math.sqrt(r2)
+            w = nl
+            u = (if (math.abs(w.x) > 0.1) Vector3.YUnit else Vector3.XUnit).cross(w).normalise
+            v = w.cross(u)
+            d = (u * math.cos(r1) * r2s
+                + v * math.sin(r1) * r2s
+                + w * math.sqrt(1.0 - r2)
+                ).normalise
+            result <- rdr.radiance(Ray(p, d), depth)
+        } yield result
     }
 }
 
@@ -40,7 +40,8 @@ case class Refractive(colour : RGB, emColour : RGB) extends Material {
 
     override def radiance(
         rdr : Renderer,
-        ray : Ray, depth: Integer,
+        ray : Ray,
+        depth: Integer,
         p : Point3,
         n : Vector3,
         nl : Vector3
@@ -68,13 +69,14 @@ case class Refractive(colour : RGB, emColour : RGB) extends Material {
             val rp = re / q
             val tp = tr / (1.0 - q)
 
-            RNG.nextDouble.flatMap(rnd => {
-                if (rnd < q) {
+            for {
+                rnd <- RNG.nextDouble
+                result <- if (rnd < q) {
                     rdr.radiance(reflRay, depth).map(rad => rad * rp)
                 } else {
                     rdr.radiance(Ray(p, tdir), depth).map(rad => rad * tp)
                 }
-            })
+            } yield result
         }
     }
 }
@@ -85,7 +87,8 @@ case class Refractive(colour : RGB, emColour : RGB) extends Material {
 case class Reflective(colour : RGB, emColour : RGB) extends Material {
     override def radiance(
         rdr : Renderer,
-        ray : Ray, depth: Integer,
+        ray : Ray,
+        depth: Integer,
         p : Point3,
         n : Vector3,
         nl : Vector3
