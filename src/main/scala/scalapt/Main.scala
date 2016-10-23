@@ -3,10 +3,12 @@ package scalapt
 import java.awt._
 import java.awt.{Frame => JFrame}
 import java.awt.event.{MouseAdapter, MouseEvent, WindowAdapter, WindowEvent}
-import java.awt.image.BufferedImage
+import java.awt.image.{BufferedImage, RenderedImage}
 import java.io.File
 import java.time.LocalDateTime
 import javax.imageio.ImageIO
+
+import com.typesafe.scalalogging.Logger
 
 class Main(
    frameTitle : String,
@@ -18,11 +20,13 @@ class Main(
    var closing : Boolean = false
 ) extends JFrame(frameTitle) {
 
-    System.out.println("Scene: " + inFile)
-    System.out.println("Width: " + w)
-    System.out.println("Height: " + h)
-    System.out.println("Frames: " + frames)
-    outFile.foreach(name => System.out.println("Outfile: " + name))
+    import Main.logger
+
+    logger.info("Scene: " + inFile)
+    logger.info("Width: " + w)
+    logger.info("Height: " + h)
+    logger.info("Frames: " + frames)
+    outFile.foreach(name => logger.info("Outfile: " + name))
 
     val scene = SceneIO.load(inFile)
 
@@ -49,7 +53,7 @@ class Main(
             System.out.print(x + " : " + y + " -> ")
 
             val ss = rdr.render(x, y).runA(Random.randDouble(x+y*rdr.width)).value
-            System.out.println(ss)
+            logger.info(ss.toString)
         }
     })
 
@@ -74,9 +78,11 @@ class Main(
         }
     }
 
-    System.out.println(LocalDateTime.now() + " : Done")
+    logger.info(LocalDateTime.now() + " : Done")
 
-    outFile.foreach(file => {
+    outFile.foreach(file => saveImage(file, image))
+
+    private def saveImage(file : File, image : RenderedImage) : Unit = {
         val name = file.getName
         val dotPos = name.lastIndexOf('.')
         val format =
@@ -85,27 +91,25 @@ class Main(
             } else {
                 "png"
             }
-        System.out.println("Saving to file '" + name + "' as format " + format)
+        logger.info("Saving to file '" + name + "' as format " + format)
         if (!ImageIO.write(image, format, file)) {
-            System.out.println("ERROR: filename prefix '" + format + " not recognised as a format")
+            logger.info("ERROR: filename prefix '" + format + " not recognised as a format")
         }
-    })
+    }
 
-    def render(i : Int) = {
-        System.out.println(LocalDateTime.now() + " : Frame " + i)
+    private def render(frameI : Int) = {
+        logger.info(LocalDateTime.now() + " : Frame " + frameI)
         ConcurrentUtils.parallelFor (0 until rdr.height) { y =>
-            val row = new Array[SuperSamp](rdr.width)
-            for (x <- 0 until rdr.width) {
-                val seed = (x+y*rdr.width)*(i+1)
-                row(x) = rdr.render(x, y).runA(Random.randDouble(seed)).value
-            }
+            val seed = (y * rdr.width) * (frameI + 1)
+            val row = rdr.render(y).runA(Random.randDouble(seed)).value
 
-            if (i == 0)
-                renderData.data(y) = new Frame.Row(row)
-            else
-                renderData.merge(y, row, i)
-
-            val mergedRow = renderData(y)
+            val mergedRow =
+                if (frameI == 0) {
+                    renderData.data(y) = row
+                    row
+                } else {
+                    renderData.merge(y, row, frameI)
+                }
 
             val sy = h - y - 1
             for (sx <- 0 until w) {
@@ -142,6 +146,8 @@ class Main(
 }
 
 object Main {
+    val logger = Logger[Main]
+
     def main(args : Array[String]) : Unit = {
         val inFile = if (args.length > 0) args(0) else "scenes/cornell2.json"
         val width = if (args.length > 1) Integer.parseInt(args(1)) else 1024

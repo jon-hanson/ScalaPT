@@ -14,7 +14,9 @@ case class Diffuse(colour : RGB, emColour : RGB, emis : Boolean = false) extends
         depth: Integer,
         p : Point3,
         n : Vector3,
-        nl : Vector3
+        nl : Vector3,
+        acc : RGB,
+        att : RGB
     ) : RNG.Type[RGB] = {
         for {
             d1 <- RNG.nextDouble
@@ -28,7 +30,7 @@ case class Diffuse(colour : RGB, emColour : RGB, emis : Boolean = false) extends
                 + v * math.sin(r1) * r2s
                 + w * math.sqrt(1.0 - r2)
                 ).normalise
-            result <- rdr.radiance(Ray(p, d), depth)
+            result <- rdr.radiance(Ray(p, d), depth, acc, att)
         } yield result
     }
 }
@@ -44,7 +46,9 @@ case class Refractive(colour : RGB, emColour : RGB) extends Material {
         depth: Integer,
         p : Point3,
         n : Vector3,
-        nl : Vector3
+        nl : Vector3,
+        acc : RGB,
+        att : RGB
     ) : RNG.Type[RGB] = {
         val nc = 1.0
         val nt = 1.5
@@ -53,9 +57,10 @@ case class Refractive(colour : RGB, emColour : RGB) extends Material {
         val nnt = if (into) nc / nt else nt / nc
         val ddn = ray.dir.dot(nl)
         val cos2t = 1.0 - nnt * nnt * (1.0 - ddn * ddn)
+
         if (cos2t < 0.0) {
             // Total internal reflection.
-            rdr.radiance(reflRay, depth)
+            rdr.radiance(reflRay, depth, acc, att)
         } else {
             val sign = if (into) 1.0 else -1.0
             val tdir = (ray.dir * nnt - n * (sign * (ddn * nnt + Math.sqrt(cos2t)))).normalise
@@ -72,9 +77,9 @@ case class Refractive(colour : RGB, emColour : RGB) extends Material {
             for {
                 rnd <- RNG.nextDouble
                 result <- if (rnd < q) {
-                    rdr.radiance(reflRay, depth).map(rad => rad * rp)
+                    rdr.radiance(reflRay, depth, acc, att * rp)
                 } else {
-                    rdr.radiance(Ray(p, tdir), depth).map(rad => rad * tp)
+                    rdr.radiance(Ray(p, tdir), depth, acc, att * tp)
                 }
             } yield result
         }
@@ -91,9 +96,11 @@ case class Reflective(colour : RGB, emColour : RGB) extends Material {
         depth: Integer,
         p : Point3,
         n : Vector3,
-        nl : Vector3
+        nl : Vector3,
+        acc : RGB,
+        att : RGB
     ) : RNG.Type[RGB] = {
         val d = ray.dir - n * 2 * n.dot(ray.dir)
-        rdr.radiance(Ray(p, d), depth)
+        rdr.radiance(Ray(p, d), depth, acc, att)
     }
 }

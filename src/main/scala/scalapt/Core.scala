@@ -1,5 +1,7 @@
 package scalapt
 
+import cats.implicits._
+
 object MathUtil {
 
     /**
@@ -73,34 +75,36 @@ trait Material {
         depth : Integer,
         p : Point3,
         n : Vector3,
-        nl : Vector3
+        nl : Vector3,
+        acc : RGB,
+        att : RGB
     ) : RNG.Type[RGB]
 }
 
 object Material {
     def diffuse(r : Double, g : Double, b : Double) =
-        new Diffuse(RGB(r, g, b), RGB.black)
+        Diffuse(RGB(r, g, b), RGB.black)
 
     def diffuse(colour : RGB) =
-        new Diffuse(colour, RGB.black)
+        Diffuse(colour, RGB.black)
 
     def emissive(r : Double, g : Double, b : Double) =
-        new Diffuse(RGB.black, RGB(r, g, b), true)
+        Diffuse(RGB.black, RGB(r, g, b), true)
 
     def emissive(colour : RGB) =
-        new Diffuse(RGB.black, colour, true)
+        Diffuse(RGB.black, colour, true)
 
     def refractive(r : Double, g : Double, b : Double) =
-        new Refractive(RGB(r, g, b), RGB.black)
+        Refractive(RGB(r, g, b), RGB.black)
 
     def refractive(colour : RGB) =
-        new Refractive(colour, RGB.black)
+        Refractive(colour, RGB.black)
 
     def reflective(r : Double, g : Double, b : Double) =
-        new Reflective(RGB(r, g, b), RGB.black)
+        Reflective(RGB(r, g, b), RGB.black)
 
     def reflective(colour : RGB) =
-        new Reflective(colour, RGB.black)
+        Reflective(colour, RGB.black)
 }
 
 /**
@@ -166,11 +170,12 @@ case class Frame(width : Int, height : Int, data : Array[Frame.Row]) {
     def apply(r : Int, c : Int) : SuperSamp =
         data(r)(c)
 
-    def merge(r : Int, rhs : Array[SuperSamp], n : Int): Unit = {
+    def merge(r : Int, rhs : Frame.Row, n : Int): Frame.Row = {
         val row = data(r)
         for (i <- row.cells.indices) {
             row.cells(i) = row(i).merge(rhs(i), n)
         }
+        row
     }
 }
 
@@ -200,6 +205,12 @@ trait Renderer {
         cx * (xs / width - 0.5) +
             cy * (ys / height - 0.5)
 
+    def render(y : Int) : RNG.Type[Frame.Row] =
+        (0 until width)
+            .toList
+            .traverseU(x => render(x, y))
+            .map(cells => Frame.Row(cells.toArray))
+
     def render(x : Int, y : Int) : RNG.Type[SuperSamp] = {
         def subPixelRad(cx : Double, cy : Double) : RNG.Type[RGB] = {
             for {
@@ -212,7 +223,7 @@ trait Renderer {
                 dir = scene.camera.ray.dir + camRay(sx, sy)
                 origin = scene.camera.ray.origin
                 ray = Ray(origin, dir)
-                result <- radiance(ray, 0)
+                result <- radiance(ray, 0, RGB.black, RGB.white)
             } yield result
         }
 
@@ -226,7 +237,9 @@ trait Renderer {
 
     def radiance(
         ray : Ray,
-        depth : Integer
+        depth : Integer,
+        acc : RGB,
+        att : RGB
     ) : RNG.Type[RGB]
 }
 

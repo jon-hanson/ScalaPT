@@ -21,7 +21,7 @@ object ConcurrentUtils {
             .sortBy(i => i % processorCount)
             .grouped(groupSize)
             .toList.map( { subRange =>
-                Future {subRange.foreach { impl(_) }}
+                Future {subRange.foreach { impl }}
             }).foreach(f => Await.result(f, wait))
     }
 }
@@ -37,10 +37,12 @@ class MonteCarloRenderer(
 
     final override def radiance(
         ray : Ray,
-        depth : Integer
+        depth : Integer,
+        acc : RGB,
+        att : RGB
     ) : RNG.Type[RGB] = {
         scene.intersect(ray) match {
-            case None => State.pure(RGB.black)
+            case None => State.pure(acc)
             case Some((prim, isect)) =>
                 val n = prim.normal(isect)
                 val nl =
@@ -51,25 +53,21 @@ class MonteCarloRenderer(
 
                 val newDepth = depth + 1
 
-                val refl : RNG.Type[RGB] = {
-                    val colour = prim.material.colour
+                val colour = prim.material.colour * att
 
-                    if (newDepth > 5) {
-                        // Modified Russian roulette.
-                        val max = colour.max * MathUtil.sqr(1.0 - depth / Renderer.MaxDepth)
-                        RNG.nextDouble.flatMap(rnd => {
-                            if (rnd >= max) {
-                                State.pure(RGB.black)
-                            } else {
-                                prim.material.radiance(this, ray, newDepth, isect, n, nl).map(r => r * colour / max)
-                            }
-                        })
-                    } else {
-                        prim.material.radiance(this, ray, newDepth, isect, n, nl).map(r => r * colour)
-                    }
+                if (newDepth > 5) {
+                    // Modified Russian roulette.
+                    val max = colour.max * MathUtil.sqr(1.0 - depth / Renderer.MaxDepth)
+                    RNG.nextDouble.flatMap(rnd => {
+                        if (rnd >= max) {
+                            State.pure(acc + prim.material.emission * att)
+                        } else {
+                            prim.material.radiance(this, ray, newDepth, isect, n, nl, acc + prim.material.emission * att, colour / max)
+                        }
+                    })
+                } else {
+                    prim.material.radiance(this, ray, newDepth, isect, n, nl, acc + prim.material.emission * att, colour)
                 }
-
-                refl.map(r => prim.material.emission + r)
         }
     }
 }
