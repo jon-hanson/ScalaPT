@@ -136,7 +136,7 @@ object Shape {
       * Epsilion value to avoid object self-intersections.
       */
 
-    final val T_EPS : Double = 1e-4
+    final val T_EPS : Double = 1e-6
 }
 
 /**
@@ -246,5 +246,5 @@ trait Renderer {
 object Renderer {
     // Need a maximum to avoid stack overflow.
     // In practice we should never hit it due to the Russian Roulette termination.
-    final val MaxDepth = 200
+    final val MaxDepth = 2000
 }

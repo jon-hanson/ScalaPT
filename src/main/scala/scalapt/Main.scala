@@ -50,15 +50,14 @@ class Main(
             val x = sx - ins.left + 1
             val y = h - (sy - ins.top) - 3
 
-            System.out.print(x + " : " + y + " -> ")
-
             val ss = rdr.render(x, y).runA(Random.randDouble(x+y*rdr.width)).value
-            logger.info(ss.toString)
+
+            logger.info(x + " : " + y + " -> " + ss)
         }
     })
 
     setLocationRelativeTo(null)
-    setBackground(Color.BLACK)
+    setBackground(Color.RED)
     setVisible(true)
 
     val rdr = new MonteCarloRenderer(w, h, scene)
@@ -68,7 +67,7 @@ class Main(
     val image = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB)
 
     val gr2d = image.getGraphics
-    gr2d.setColor(Color.RED)
+    gr2d.setColor(Color.BLUE)
     gr2d.drawRect(0, 0, w-1, h-1)
     repaint(ins.left, ins.top, w, h)
 
@@ -100,7 +99,7 @@ class Main(
     private def render(frameI : Int) = {
         logger.info(LocalDateTime.now() + " : Frame " + frameI)
         ConcurrentUtils.parallelFor (0 until rdr.height) { y =>
-            val seed = (y * rdr.width) * (frameI + 1)
+            val seed = frameI * rdr.height + y
             val row = rdr.render(y).runA(Random.randDouble(seed)).value
 
             val mergedRow =

@@ -3,6 +3,7 @@ package scalapt
 import java.util.concurrent.TimeUnit
 
 import cats.data.State
+import com.typesafe.scalalogging.Logger
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, ExecutionContext, Future}
@@ -34,6 +35,7 @@ class MonteCarloRenderer(
     val height : Integer,
     val scene : Scene
 ) extends Renderer {
+    import MonteCarloRenderer.logger
 
     final override def radiance(
         ray : Ray,
@@ -42,7 +44,9 @@ class MonteCarloRenderer(
         att : RGB
     ) : RNG.Type[RGB] = {
         scene.intersect(ray) match {
-            case None => State.pure(acc)
+            case None => {
+                State.pure(acc)
+            }
             case Some((prim, isect)) =>
                 val n = prim.normal(isect)
                 val nl =
@@ -54,20 +58,25 @@ class MonteCarloRenderer(
                 val newDepth = depth + 1
 
                 val colour = prim.material.colour * att
+                val acc2 = acc + prim.material.emission * att
 
                 if (newDepth > 5) {
                     // Modified Russian roulette.
                     val max = colour.max * MathUtil.sqr(1.0 - depth / Renderer.MaxDepth)
                     RNG.nextDouble.flatMap(rnd => {
                         if (rnd >= max) {
-                            State.pure(acc + prim.material.emission * att)
+                            State.pure(acc2)
                         } else {
-                            prim.material.radiance(this, ray, newDepth, isect, n, nl, acc + prim.material.emission * att, colour / max)
+                            prim.material.radiance(this, ray, newDepth, isect, n, nl, acc2, colour / max)
                         }
                     })
                 } else {
-                    prim.material.radiance(this, ray, newDepth, isect, n, nl, acc + prim.material.emission * att, colour)
+                    prim.material.radiance(this, ray, newDepth, isect, n, nl, acc2, colour)
                 }
         }
     }
+}
+
+object MonteCarloRenderer {
+    val logger = Logger[Main]
 }
