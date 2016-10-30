@@ -47,7 +47,7 @@ class MonteCarloRenderer(
             case None => {
                 State.pure(acc)
             }
-            case Some((prim, isect)) =>
+            case Some((prim, isect)) => {
                 val n = prim.normal(isect)
                 val nl =
                     if (n.dot(ray.dir) < 0)
@@ -63,16 +63,18 @@ class MonteCarloRenderer(
                 if (newDepth > 5) {
                     // Modified Russian roulette.
                     val max = colour.max * MathUtil.sqr(1.0 - depth / Renderer.MaxDepth)
-                    RNG.nextDouble.flatMap(rnd => {
-                        if (rnd >= max) {
-                            State.pure(acc2)
+                    for {
+                        rnd <- RNG.nextDouble
+                        result <- if (rnd >= max) {
+                            State.pure(acc2).asInstanceOf[RNG.Type[RGB]]
                         } else {
                             prim.material.radiance(this, ray, newDepth, isect, n, nl, acc2, colour / max)
                         }
-                    })
+                    } yield result
                 } else {
                     prim.material.radiance(this, ray, newDepth, isect, n, nl, acc2, colour)
                 }
+            }
         }
     }
 }
