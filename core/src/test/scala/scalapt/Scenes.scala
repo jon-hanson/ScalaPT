@@ -1,5 +1,7 @@
 package scalapt
 
+import scalapt.core._
+
 object GenerateScenes {
 
     def main(args : Array[String]) : Unit = {

@@ -1,4 +1,4 @@
-package scalapt
+package scalapt.core
 
 import java.nio.file.{Files, Paths}
 import java.util.NoSuchElementException

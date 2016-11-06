@@ -1,4 +1,4 @@
-package scalapt
+package scalapt.core
 
 /**
   * A triple of colour coefficients.
@@ -32,8 +32,7 @@ case class RGB(red : Double, green : Double, blue : Double) {
         RGB(red * s, green * s, blue * s)
 
     def /(d : Double) = {
-        val s = 1.0 / d
-        this * s
+        this * (1.0 / d)
     }
 
     def *(rhs : RGB) =
@@ -77,7 +76,7 @@ object RGB {
   * in order improve anti-aliasing.
   */
 
-case class SuperSamp(c00 : RGB, c10 : RGB, c01 : RGB, c11 : RGB) {
+class SuperSamp(var c00 : RGB, var c10 : RGB, var c01 : RGB, var c11 : RGB) {
 
     def apply(x : Int, y : Int) : RGB =
         (x, y) match {
@@ -95,6 +94,13 @@ case class SuperSamp(c00 : RGB, c10 : RGB, c01 : RGB, c11 : RGB) {
             (c11 * n + rhs.c11) / (n + 1)
         )
 
+    def mergeFrom(rhs : SuperSamp, n : Int) : Unit = {
+        c00 = (c00 * n + rhs.c00) / (n + 1)
+        c10 = (c10 * n + rhs.c10) / (n + 1)
+        c01 = (c01 * n + rhs.c01) / (n + 1)
+        c11 = (c11 * n + rhs.c11) / (n + 1)
+    }
+
     def clamp : RGB =
         (c00.clamp + c10.clamp + c01.clamp + c11.clamp) * 0.25
 
@@ -104,4 +110,8 @@ case class SuperSamp(c00 : RGB, c10 : RGB, c01 : RGB, c11 : RGB) {
 
 object SuperSamp {
     final val black = SuperSamp(RGB.black, RGB.black, RGB.black, RGB.black)
+
+    def apply(c00 : RGB, c10 : RGB, c01 : RGB, c11 : RGB) : SuperSamp = {
+        new SuperSamp(c00, c10, c01, c11)
+    }
 }

@@ -1,6 +1,7 @@
-package scalapt
+package scalapt.core
 
 import cats.implicits._
+import com.typesafe.scalalogging.Logger
 
 object MathUtil {
 
@@ -162,28 +163,29 @@ object Scene {
   * Represents a single rendered frame.
   */
 
-case class Frame(width : Int, height : Int, data : Array[Frame.Row]) {
+case class Frame(width : Int, height : Int, rows : Array[Frame.Row]) {
 
     def apply(r : Int) : Frame.Row =
-        data(r)
+        rows(r)
 
     def apply(r : Int, c : Int) : SuperSamp =
-        data(r)(c)
+        rows(r)(c)
 
-    def merge(r : Int, rhs : Frame.Row, n : Int): Frame.Row = {
-        val row = data(r)
-        for (i <- row.cells.indices) {
-            row.cells(i) = row(i).merge(rhs(i), n)
+    def merge(y : Int, newRow : Frame.Row, n : Int) : Frame.Row = {
+        if (n == 0) {
+            rows(y) = newRow
+        } else {
+            val row = rows(y)
+            for (x <- row.indices) {
+                row(x).mergeFrom(newRow(x), n)
+            }
         }
-        row
+        rows(y)
     }
 }
 
 object Frame {
-    case class Row(cells : Array[SuperSamp]) {
-        def apply(r : Int) : SuperSamp =
-            cells(r)
-    }
+    type Row = Array[SuperSamp]
 
     def apply(width : Int, height : Int) : Frame =
         Frame(width, height, new Array[Frame.Row](width))
@@ -194,6 +196,8 @@ object Frame {
   */
 
 trait Renderer {
+    import Renderer._
+
     val width : Integer
     val height : Integer
     val scene : Scene
@@ -205,11 +209,17 @@ trait Renderer {
         cx * (xs / width - 0.5) +
             cy * (ys / height - 0.5)
 
-    def render(y : Int) : RNG.Type[Frame.Row] =
+    def render() : RNG.Type[Frame] = {
+        (0 until height)
+            .toList
+            .traverseU(render(_))
+            .map(rows => Frame(width, height, rows.map(_.toArray).toArray))
+    }
+
+    def render(y : Int) :  RNG.Type[List[SuperSamp]] =
         (0 until width)
             .toList
-            .traverseU(x => render(x, y))
-            .map(cells => Frame.Row(cells.toArray))
+            .traverseU(render(_, y))
 
     def render(x : Int, y : Int) : RNG.Type[SuperSamp] = {
         def subPixelRad(cx : Double, cy : Double) : RNG.Type[RGB] = {
@@ -247,4 +257,6 @@ object Renderer {
     // Need a maximum to avoid stack overflow.
     // In practice we should never hit it due to the Russian Roulette termination.
     final val MaxDepth = 2000
+
+    val logger = Logger[Renderer]
 }

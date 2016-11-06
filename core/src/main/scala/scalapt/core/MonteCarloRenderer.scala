@@ -1,31 +1,7 @@
-package scalapt
-
-import java.util.concurrent.TimeUnit
+package scalapt.core
 
 import cats.data.State
 import com.typesafe.scalalogging.Logger
-
-import scala.concurrent.duration.Duration
-import scala.concurrent.{Await, ExecutionContext, Future}
-
-object ConcurrentUtils {
-
-    implicit final val ExCtx = ExecutionContext.fromExecutor(null)
-
-    final val processorCount = Runtime.getRuntime.availableProcessors
-
-    def parallelFor(range : Range)(impl : Int => Unit) = {
-        val wait = Duration.create(10, TimeUnit.DAYS)
-        val groupSize = range.size / processorCount
-
-        range
-            .sortBy(i => i % processorCount)
-            .grouped(groupSize)
-            .toList.map( { subRange =>
-                Future {subRange.foreach { impl }}
-            }).foreach(f => Await.result(f, wait))
-    }
-}
 
 /**
   * Monte-Carlo path tracing renderer.
@@ -80,5 +56,5 @@ class MonteCarloRenderer(
 }
 
 object MonteCarloRenderer {
-    val logger = Logger[Main]
+    val logger = Logger[MonteCarloRenderer]
 }

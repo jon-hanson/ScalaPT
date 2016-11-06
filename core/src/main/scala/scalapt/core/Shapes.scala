@@ -1,4 +1,4 @@
-package scalapt
+package scalapt.core
 
 /**
   * Sphere
