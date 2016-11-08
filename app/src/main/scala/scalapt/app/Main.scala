@@ -33,6 +33,7 @@ class Main(
     logger.info("Width: " + w)
     logger.info("Height: " + h)
     logger.info("Frames: " + frames)
+    logger.info("Seed: " + initialSeed)
     outFile.foreach(name => logger.info("Outfile: " + name))
 
     val scene = SceneIO.load(inFile)
@@ -111,28 +112,24 @@ class Main(
         if (!closing) {
             logger.info("Frame " + frameI)
 
-            val tasks = (0 until rdr.height)
-                .toList
-                .traverseU(y => for {ySeed <- RNG.nextLong} yield (y, ySeed))
-                .runA(Random.xorShift(frameSeed))
-                .value
-                .map({case (y, seed) =>
-                    Task({
-                        val cells = rdr.render(y) //work(rdr.width, y)
-                            .runA(Random.xorShift(seed))
-                            .value
-                            .toArray
-                        val row = renderData.merge(y, cells, frameI)
-                        displayRow(y, row)
-                    }).runAsync
-                }).foreach(Await.result(_, 60.minutes))
+            val tasks =
+                (0 until rdr.height)
+                    .toList
+                    .traverseU(y => for {ySeed <- RNG.nextLong} yield (y, ySeed))
+                    .runA(Random.xorShift(frameSeed))
+                    .value
+                    .map({case (y, seed) =>
+                        Task({
+                            val cells = rdr.render(y) //work(rdr.width, y)
+                                .runA(Random.xorShift(seed))
+                                .value
+                                .toArray
+                            val row = renderData.merge(y, cells, frameI)
+                            displayRow(y, row)
+                        })
+                    })
+            Await.result(Task.gather(tasks).runAsync, 60.minutes)
         }
-    }
-
-    def work(w : Int, y : Int) : RNG.Type[List[Double]] = {
-        (0 until w)
-            .toList
-            .traverseU(_ => RNG.nextDouble)
     }
 
     private def displayRow(y : Int, row : Frame.Row) {
