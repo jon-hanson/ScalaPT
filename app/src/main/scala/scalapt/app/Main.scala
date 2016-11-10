@@ -108,7 +108,7 @@ class Main(
         }
     }
 
-    private def render(frameI : Int, frameSeed : Long) {
+    private def render(frameI : Int, frameSeed : Long) = {
         if (!closing) {
             logger.info("Frame " + frameI)
 
@@ -132,7 +132,7 @@ class Main(
         }
     }
 
-    private def displayRow(y : Int, row : Frame.Row) {
+    private def displayRow(y : Int, row : Frame.Row) = {
         val sy = h - y - 1
         for (sx <- 0 until w) {
             image.setRGB(sx, sy, colVecToInt(row(sx).clamp))
@@ -151,7 +151,7 @@ class Main(
 object Main {
     val logger = Logger[Main]
 
-    def main(args : Array[String]) : Unit = {
+    def main(args : Array[String]) = {
         val inFile = if (args.length > 0) args(0) else "scenes/cornell2.json"
         val seed = if (args.length > 1) Integer.parseInt(args(1)) else 0
         val width = if (args.length > 1) Integer.parseInt(args(2)) else 1024
