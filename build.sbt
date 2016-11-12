@@ -1,22 +1,17 @@
 val scalaPTVersion = "1.0"
 
-val scalaLangVersion = "2.11.8"
+val scalaLangVersion = "2.12.0"
 
-val catsVersion = "0.7.2"
-val circeVersion = "0.5.4"
+val catsVersion = "0.8.1"
+val circeVersion = "0.6.0"
 val log4jVersion = "2.7"
-val monixVersion = "2.0.6"
+val monixVersion = "2.1.0"
 val scalaLogVersion = "3.5.0"
 
 lazy val commonSettings = Seq(
     version := scalaPTVersion,
     scalaVersion := scalaLangVersion
 )
-//
-//lazy val root = Project(id = "ScalaPT", base = file("."))
-//    .settings(commonSettings: _*)
-//    .aggregate(core, app)
-//    .dependsOn(core, app)
 
 lazy val core = Project(id = "ScalaPT-Core", base = file("core"))
     .settings(commonSettings: _*)

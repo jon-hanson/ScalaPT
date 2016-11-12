@@ -3,7 +3,9 @@ package scalapt.core
 import java.nio.file.{Files, Paths}
 import java.util.NoSuchElementException
 
-import cats.data.Xor
+import cats._
+import cats.data._
+import cats.implicits._
 import io.circe._
 import io.circe.generic.auto._
 import io.circe.parser._
@@ -28,12 +30,12 @@ object Codecs {
             c.focus.asString match {
                 case Some(s) =>
                     try
-                        Xor.right(Axis.withName(s))
+                        Either.right(Axis.withName(s))
                     catch {
                         case ex : NoSuchElementException =>
-                            Xor.left(DecodingFailure(ex.getMessage, c.history))
+                            Either.left(DecodingFailure(ex.getMessage, c.history))
                     }
-                case None => Xor.left(DecodingFailure("String", c.history))
+                case None => Either.left(DecodingFailure("String", c.history))
             }
         )
 
