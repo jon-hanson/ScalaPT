@@ -2,6 +2,11 @@ package scalapt.core
 
 import cats.implicits._
 import com.typesafe.scalalogging.Logger
+import monix.eval.Task
+import monix.execution.Scheduler.Implicits.global
+
+import scala.concurrent.Await
+import scala.concurrent.duration._
 
 object MathUtil {
 
@@ -45,8 +50,8 @@ object MathUtil {
 }
 
 /**
- * Ray
- */
+  * Ray
+  */
 
 case class Ray private (dir : Vector3, origin : Point3) {
     def apply(t : Double) : Point3 =
@@ -109,8 +114,8 @@ object Material {
 }
 
 /**
- * Camera
- */
+  * Camera
+  */
 
 case class Camera(ray : Ray, fov : Double)
 
@@ -149,7 +154,7 @@ case class Scene(camera : Camera, shapes : List[Shape]) {
       * Find the closest shape intersected by the ray.
       */
     def intersect(ray : Ray) : Option[(Shape, Point3)] =
-         shapes
+        shapes
             .flatMap(obj => obj.intersect(ray).map(t => (obj, t)))
             .reduceOption(Scene.distance.min)
             .map({case(obj, t) => (obj, ray(t))})
@@ -163,7 +168,7 @@ object Scene {
   * Represents a single rendered frame.
   */
 
-case class Frame(width : Int, height : Int, rows : Array[Frame.Row]) {
+case class Frame(seed : Long, width : Int, height : Int, rows : Array[Frame.Row]) {
 
     def apply(r : Int) : Frame.Row =
         rows(r)
@@ -187,8 +192,8 @@ case class Frame(width : Int, height : Int, rows : Array[Frame.Row]) {
 object Frame {
     type Row = Array[SuperSamp]
 
-    def apply(width : Int, height : Int) : Frame =
-        Frame(width, height, new Array[Frame.Row](width))
+    def apply(seed : Long, width : Int, height : Int) : Frame =
+        Frame(seed, width, height, new Array[Frame.Row](width))
 }
 
 /**
@@ -209,11 +214,29 @@ trait Renderer {
         cx * (xs / width - 0.5) +
             cy * (ys / height - 0.5)
 
-    def render() : RNG.Type[Frame] = {
-        (0 until height)
-            .toList
-            .traverseU(render(_))
-            .map(rows => Frame(width, height, rows.map(_.toArray).toArray))
+    def render(
+        frameI : Int,
+        frameSeed : Long,
+        rowSink : (Int, Long, Array[SuperSamp]) => Unit
+    ) : List[Unit] = {
+        logger.info("Frame " + frameI)
+
+        val tasks =
+            (0 until height)
+                .toList
+                .traverseU(y => for {ySeed <- RNG.nextLong} yield (y, ySeed))
+                .runA(Random.xorShift(frameSeed))
+                .value
+                .map({case (y, seed) =>
+                    Task({
+                        val cells = render(y)
+                            .runA(Random.xorShift(seed))
+                            .value
+                            .toArray
+                        rowSink(y, seed, cells)
+                    })
+                })
+        Await.result(Task.gather(tasks).runAsync, 60.minutes)
     }
 
     def render(y : Int) :  RNG.Type[List[SuperSamp]] =
@@ -246,11 +269,11 @@ trait Renderer {
     }
 
     def radiance(
-        ray : Ray,
-        depth : Integer,
-        acc : RGB,
-        att : RGB
-    ) : RNG.Type[RGB]
+                    ray : Ray,
+                    depth : Integer,
+                    acc : RGB,
+                    att : RGB
+                ) : RNG.Type[RGB]
 }
 
 object Renderer {

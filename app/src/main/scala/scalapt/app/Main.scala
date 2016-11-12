@@ -70,7 +70,7 @@ class Main(
 
     val rdr = new MonteCarloRenderer(w, h, scene)
 
-    val renderData = Frame(w, h)
+    val renderData = Frame(initialSeed, w, h)
 
     val image = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB)
 
@@ -110,25 +110,10 @@ class Main(
 
     private def render(frameI : Int, frameSeed : Long) = {
         if (!closing) {
-            logger.info("Frame " + frameI)
-
-            val tasks =
-                (0 until rdr.height)
-                    .toList
-                    .traverseU(y => for {ySeed <- RNG.nextLong} yield (y, ySeed))
-                    .runA(Random.xorShift(frameSeed))
-                    .value
-                    .map({case (y, seed) =>
-                        Task({
-                            val cells = rdr.render(y) //work(rdr.width, y)
-                                .runA(Random.xorShift(seed))
-                                .value
-                                .toArray
-                            val row = renderData.merge(y, cells, frameI)
-                            displayRow(y, row)
-                        })
-                    })
-            Await.result(Task.gather(tasks).runAsync, 60.minutes)
+            rdr.render(frameI, frameSeed, (y : Int, rowSeed : Long, cells : Array[SuperSamp]) => {
+                val row = renderData.merge(y, cells, frameI)
+                displayRow(y, row)
+            })
         }
     }
 
