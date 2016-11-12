@@ -124,7 +124,6 @@ case class Camera(ray : Ray, fov : Double)
   */
 
 trait Shape {
-    // Only required for debugging.
     val name : String
 
     val material : Material
@@ -218,7 +217,7 @@ trait Renderer {
         frameI : Int,
         frameSeed : Long,
         rowSink : (Int, Long, Array[SuperSamp]) => Unit
-    ) : List[Unit] = {
+    ) : Unit = {
         logger.info("Frame " + frameI)
 
         val tasks =
@@ -269,11 +268,11 @@ trait Renderer {
     }
 
     def radiance(
-                    ray : Ray,
-                    depth : Integer,
-                    acc : RGB,
-                    att : RGB
-                ) : RNG.Type[RGB]
+        ray : Ray,
+        depth : Integer,
+        acc : RGB,
+        att : RGB
+    ) : RNG.Type[RGB]
 }
 
 object Renderer {
