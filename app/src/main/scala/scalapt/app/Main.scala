@@ -9,11 +9,7 @@ import javax.imageio.ImageIO
 import com.typesafe.scalalogging.Logger
 
 import scalapt.core._
-import scala.concurrent.duration._
-import scala.concurrent.{Await, ExecutionContext, Future}
 import cats.implicits._
-import monix.execution.Scheduler.Implicits.global
-import monix.eval.Task
 
 class Main(
         frameTitle : String,

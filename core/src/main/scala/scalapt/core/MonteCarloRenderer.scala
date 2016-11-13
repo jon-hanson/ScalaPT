@@ -11,7 +11,6 @@ class MonteCarloRenderer(
     val height : Integer,
     val scene : Scene
 ) extends Renderer {
-    import MonteCarloRenderer.logger
 
     final override def radiance(
         ray : Ray,

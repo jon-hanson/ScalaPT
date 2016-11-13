@@ -8,6 +8,7 @@ object GenerateScenes {
         SceneIO.save(Cornell.scene, "scenes/cornell.json")
         SceneIO.save(Cornell2.scene, "scenes/cornell2.json")
         SceneIO.save(Horizon.scene, "scenes/horizon.json")
+        SceneIO.save(Spectrum.scene, "scenes/spectrum.json")
     }
 }
 

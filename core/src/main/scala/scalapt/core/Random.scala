@@ -74,25 +74,6 @@ case class XorShiftRNG(seed : Long = 0) extends RNG {
     }
 }
 
-///**
-//  * Convert a RNG of Longs into one of Doubles
-//  */
-//
-//case class DoubleRNG(rng : RNG[Long]) extends RNG[Double] {
-//    import DoubleRNG._
-//
-//    override def next: (RNG[Double], Double) = {
-//        val (rng2, rl) = rng.next
-//        val dl = (rl.toDouble - Long.MinValue.toDouble) / Scale
-//        (DoubleRNG(rng2), dl)
-//    }
-//}
-//
-//object DoubleRNG {
-//    final val Scale = Long.MaxValue.toDouble - Long.MinValue.toDouble + 1.0
-//    final val Mod = 1L << 64
-//}
-
 /**
   * API for requesting RNGs
   */
@@ -102,8 +83,4 @@ object Random {
 
     def lcg(seed : Long) : RNG =
         LiCoGrRNG(seed)
-
-//
-//    def randDouble(seed : Long) : RNG[Double] =
-//        XorShiftRNG(seed)
 }
