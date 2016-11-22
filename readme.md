@@ -70,6 +70,10 @@ ScalaPT differs from the original in several places:
 
 # Examples
 
+## "RGB"
+
+![RGB](https://github.com/jon-hanson/ScalaPT/blob/master/examples/rgb.png)
+
 ## "Horizon"
 
 ![Horizon](https://github.com/jon-hanson/ScalaPT/blob/master/examples/horizon.png)
