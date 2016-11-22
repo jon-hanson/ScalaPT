@@ -1,5 +1,7 @@
 package scalapt.core
 
+import cats._
+
 /**
   * A triple of colour coefficients.
   */
@@ -69,6 +71,14 @@ object RGB {
 
     def apply() =
         black
+
+    implicit val rgbMonoid : Monoid[RGB] = new Monoid[RGB] {
+        override def empty : RGB =
+            black
+
+        override def combine(x : RGB, y : RGB) : RGB =
+            x + y
+    }
 }
 
 /**
@@ -113,5 +123,13 @@ object SuperSamp {
 
     def apply(c00 : RGB, c10 : RGB, c01 : RGB, c11 : RGB) : SuperSamp = {
         new SuperSamp(c00, c10, c01, c11)
+    }
+
+    implicit val rgbMonoid : Monoid[SuperSamp] = new Monoid[SuperSamp] {
+        override def empty : SuperSamp =
+            black
+
+        override def combine(x : SuperSamp, y : SuperSamp) : SuperSamp =
+            x + y
     }
 }

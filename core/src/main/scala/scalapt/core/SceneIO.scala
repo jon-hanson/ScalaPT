@@ -4,6 +4,7 @@ import java.nio.file.{Files, Paths}
 import java.util.NoSuchElementException
 
 import cats.implicits._
+import com.typesafe.scalalogging.Logger
 import io.circe._
 import io.circe.generic.auto._
 import io.circe.parser._
@@ -73,16 +74,23 @@ object Codecs {
         }
 }
 
+class SceneIO {
+}
+
 object SceneIO {
+
+    val logger = Logger[SceneIO]
 
     import Codecs._
 
     def load(fileName : String) : Scene = {
+        logger.info("Loading scene form " + fileName)
         val encoded = new String(Files.readAllBytes(Paths.get(fileName)))
         decode[Scene](encoded).valueOr(err => throw err)
     }
 
     def save(scene : Scene, fileName : String) = {
+        logger.info("Saving scene to " + fileName)
         val encoded = scene.asJson.spaces4
         Files.write(Paths.get(fileName), encoded.getBytes)
     }

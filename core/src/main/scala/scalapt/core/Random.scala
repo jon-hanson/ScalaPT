@@ -3,7 +3,9 @@ package scalapt.core
 import cats.data.State
 
 /**
-  * Random Number Generator
+  * Random Number Generator.
+  * The two nextXXX methods are implemented in terms of each other,
+  * so implementing classes must override at least one method.
   */
 
 trait RNG {
@@ -11,7 +13,7 @@ trait RNG {
     /**
       * @return a random double in the range 0 to 1 inclusive.
       */
-    def nextDouble : (RNG, Double) = {
+    def nextDouble0To1 : (RNG, Double) = {
         val (rng2, rl) = nextLong
         val d = (rl.toDouble - Long.MinValue.toDouble) / RNG.Scale
         (rng2, d)
@@ -21,7 +23,7 @@ trait RNG {
       * @return a random long.
       */
     def nextLong : (RNG, Long) = {
-        val (rng2, rd) = nextDouble
+        val (rng2, rd) = nextDouble0To1
         val l = (rd * RNG.Scale + Long.MinValue.toDouble).toLong
         (rng2, l)
     }
@@ -29,12 +31,11 @@ trait RNG {
 
 object RNG {
     private final val Scale = Long.MaxValue.toDouble - Long.MinValue.toDouble + 1.0
-    private final val Mod = 1L << 64
 
     type Type[T] = State[RNG, T]
 
     def nextDouble : Type[Double] =
-        State(rng => rng.nextDouble)
+        State(rng => rng.nextDouble0To1)
 
     def nextLong : Type[Long] =
         State(rng => rng.nextLong)
@@ -44,16 +45,16 @@ object RNG {
   * Linear Congruential Generator RNG
   */
 
-case class LiCoGrRNG(seed : Long = 0) extends RNG {
-    import LiCoGrRNG._
+case class LcgRNG(seed : Long = 0) extends RNG {
+    import LcgRNG._
 
-    override def nextDouble : (RNG, Double) = {
+    override def nextDouble0To1 : (RNG, Double) = {
         val seed2 = (Mult * seed + Inc) % Mod
-        (LiCoGrRNG(seed2), seed2 / Scale)
+        (LcgRNG(seed2), seed2 / Scale)
     }
 }
 
-object LiCoGrRNG {
+object LcgRNG {
     final val Mult = 214013L
     final val Inc = 2531011L
     final val Mod = 0x100000000L
@@ -82,5 +83,5 @@ object Random {
         XorShiftRNG(seed)
 
     def lcg(seed : Long) : RNG =
-        LiCoGrRNG(seed)
+        LcgRNG(seed)
 }

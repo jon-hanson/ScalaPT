@@ -8,7 +8,7 @@ object GenerateScenes {
         SceneIO.save(Cornell.scene, "scenes/cornell.json")
         SceneIO.save(Cornell2.scene, "scenes/cornell2.json")
         SceneIO.save(Horizon.scene, "scenes/horizon.json")
-        SceneIO.save(Spectrum.scene, "scenes/spectrum.json")
+        SceneIO.save(RedGreenBlue.scene, "scenes/rgb.json")
     }
 }
 
@@ -98,5 +98,52 @@ object Horizon {
                 cam,
                 lookAt - cam
             ), 0.7
+        ), objects)
+}
+
+object RedGreenBlue {
+    val cos30 = Math.cos(math.Pi / 6.0)
+    val sin30 = Math.sin(math.Pi / 6.0)
+
+    val W = 100.0
+    val W2 = W * 2.0 / 3.0
+    val D = W / 2.0
+    val R = W / 4.0
+    val R2 = W * 16.0
+
+    val sky = RGB(135.0/256, 206.0/256, 250.0/256)
+
+    val circR = W2
+
+    val pL = Point3(circR * -cos30, R, circR * sin30)
+    val pM = Point3(0, R, -circR)
+    val pR = Point3(circR * cos30, R, circR * sin30)
+
+    val objects : List[Shape] =
+        List(
+            Plane("ground", Material.diffuse(RGB.white * 0.999), Axis.Y, true, 0.0),
+
+            Sphere("lglass", Material.refractive(0.75, 0.25, 0.25), pL, R),
+            Sphere("mglass", Material.refractive(0.25, 0.75, 0.25), pM, R),
+            Sphere("rglass", Material.refractive(0.25, 0.25, 0.75), pR, R),
+
+            Sphere("llight", Material.emissive(RGB.white * 12.0), pL * 2.0, R / 2.0),
+            Sphere("mlight", Material.emissive(RGB.white * 12.0), pM * 2.0, R / 2.0),
+            Sphere("rlight", Material.emissive(RGB.white * 12.0), pR * 2.0, R / 2.0),
+
+            //Sphere("light", Material.emissive(RGB.white * 12.0), Point3(0.0, W * 2, 0.0), R),
+
+            Sphere("sky", Material.diffuse(sky), Point3(0.0, W * 3 + R2, 0.0), R2)
+        )
+
+    val cam = Point3(0.0, W * 2.5, 1.5 * W)
+    val lookAt = Point3(0.0, R, 0.0)
+
+    val scene = Scene(
+        Camera(
+            Ray(
+                cam,
+                lookAt - cam
+            ), 0.6
         ), objects)
 }

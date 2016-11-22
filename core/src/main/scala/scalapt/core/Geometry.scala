@@ -1,5 +1,7 @@
 package scalapt.core
 
+import cats._
+
 /**
   * Axis
   */
@@ -165,4 +167,12 @@ object Vector3 {
             case Axis.Y => YUnit
             case Axis.Z => ZUnit
         }
+
+    implicit val rgbMonoid : Monoid[Vector3] = new Monoid[Vector3] {
+        override def empty : Vector3 =
+            Zero
+
+        override def combine(x : Vector3, y : Vector3) : Vector3 =
+            x + y
+    }
 }

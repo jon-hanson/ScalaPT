@@ -1,0 +1,205 @@
+{
+    "camera" : {
+        "ray" : {
+            "dir" : {
+                "x" : 0.0,
+                "y" : -0.8320502943378436,
+                "z" : -0.554700196225229
+            },
+            "origin" : {
+                "x" : 0.0,
+                "y" : 250.0,
+                "z" : 150.0
+            }
+        },
+        "fov" : 0.6
+    },
+    "shapes" : [
+        {
+            "type" : "Plane",
+            "name" : "ground",
+            "material" : {
+                "type" : "Diffuse",
+                "colour" : {
+                    "red" : 0.999,
+                    "green" : 0.999,
+                    "blue" : 0.999
+                },
+                "emColour" : {
+                    "red" : 0.0,
+                    "green" : 0.0,
+                    "blue" : 0.0
+                },
+                "emis" : false
+            },
+            "side" : "Y",
+            "posFacing" : true,
+            "v" : 0.0
+        },
+        {
+            "type" : "Sphere",
+            "name" : "lglass",
+            "material" : {
+                "type" : "Refractive",
+                "colour" : {
+                    "red" : 0.75,
+                    "green" : 0.25,
+                    "blue" : 0.25
+                },
+                "emColour" : {
+                    "red" : 0.0,
+                    "green" : 0.0,
+                    "blue" : 0.0
+                }
+            },
+            "centre" : {
+                "x" : -57.73502691896258,
+                "y" : 25.0,
+                "z" : 33.33333333333333
+            },
+            "radius" : 25.0
+        },
+        {
+            "type" : "Sphere",
+            "name" : "mglass",
+            "material" : {
+                "type" : "Refractive",
+                "colour" : {
+                    "red" : 0.25,
+                    "green" : 0.75,
+                    "blue" : 0.25
+                },
+                "emColour" : {
+                    "red" : 0.0,
+                    "green" : 0.0,
+                    "blue" : 0.0
+                }
+            },
+            "centre" : {
+                "x" : 0.0,
+                "y" : 25.0,
+                "z" : -66.66666666666667
+            },
+            "radius" : 25.0
+        },
+        {
+            "type" : "Sphere",
+            "name" : "rglass",
+            "material" : {
+                "type" : "Refractive",
+                "colour" : {
+                    "red" : 0.25,
+                    "green" : 0.25,
+                    "blue" : 0.75
+                },
+                "emColour" : {
+                    "red" : 0.0,
+                    "green" : 0.0,
+                    "blue" : 0.0
+                }
+            },
+            "centre" : {
+                "x" : 57.73502691896258,
+                "y" : 25.0,
+                "z" : 33.33333333333333
+            },
+            "radius" : 25.0
+        },
+        {
+            "type" : "Sphere",
+            "name" : "llight",
+            "material" : {
+                "type" : "Diffuse",
+                "colour" : {
+                    "red" : 0.0,
+                    "green" : 0.0,
+                    "blue" : 0.0
+                },
+                "emColour" : {
+                    "red" : 12.0,
+                    "green" : 12.0,
+                    "blue" : 12.0
+                },
+                "emis" : true
+            },
+            "centre" : {
+                "x" : -115.47005383792516,
+                "y" : 50.0,
+                "z" : 66.66666666666666
+            },
+            "radius" : 12.5
+        },
+        {
+            "type" : "Sphere",
+            "name" : "mlight",
+            "material" : {
+                "type" : "Diffuse",
+                "colour" : {
+                    "red" : 0.0,
+                    "green" : 0.0,
+                    "blue" : 0.0
+                },
+                "emColour" : {
+                    "red" : 12.0,
+                    "green" : 12.0,
+                    "blue" : 12.0
+                },
+                "emis" : true
+            },
+            "centre" : {
+                "x" : 0.0,
+                "y" : 50.0,
+                "z" : -133.33333333333334
+            },
+            "radius" : 12.5
+        },
+        {
+            "type" : "Sphere",
+            "name" : "rlight",
+            "material" : {
+                "type" : "Diffuse",
+                "colour" : {
+                    "red" : 0.0,
+                    "green" : 0.0,
+                    "blue" : 0.0
+                },
+                "emColour" : {
+                    "red" : 12.0,
+                    "green" : 12.0,
+                    "blue" : 12.0
+                },
+                "emis" : true
+            },
+            "centre" : {
+                "x" : 115.47005383792516,
+                "y" : 50.0,
+                "z" : 66.66666666666666
+            },
+            "radius" : 12.5
+        },
+        {
+            "type" : "Sphere",
+            "name" : "sky",
+            "material" : {
+                "type" : "Diffuse",
+                "colour" : {
+                    "red" : 0.52734375,
+                    "green" : 0.8046875,
+                    "blue" : 0.9765625
+                },
+                "emColour" : {
+                    "red" : 0.0,
+                    "green" : 0.0,
+                    "blue" : 0.0
+                },
+                "emis" : false
+            },
+            "centre" : {
+                "x" : 0.0,
+                "y" : 1900.0,
+                "z" : 0.0
+            },
+            "radius" : 1600.0
+        }
+    ]
+}
