@@ -2,6 +2,21 @@ package scalapt.core
 
 import cats._
 
+object ColourUtils {
+
+    def colVecToInt(colour : RGB) : Int = {
+        colDblToInt(colour.blue) |
+            (colDblToInt(colour.green) << 8) |
+            (colDblToInt(colour.red) << 16)
+    }
+
+    def colDblToInt(d : Double) : Int = {
+        val i = MathUtil.gammaCorr(d)
+        val j = i * 255.0 + 0.5
+        MathUtil.clamp(j, 0, 255).toInt
+    }
+}
+
 /**
   * A triple of colour coefficients.
   */
@@ -86,7 +101,7 @@ object RGB {
   * in order improve anti-aliasing.
   */
 
-class SuperSamp(var c00 : RGB, var c10 : RGB, var c01 : RGB, var c11 : RGB) {
+case class SuperSamp(var c00 : RGB, var c10 : RGB, var c01 : RGB, var c11 : RGB) {
 
     def apply(x : Int, y : Int) : RGB =
         (x, y) match {
@@ -120,10 +135,6 @@ class SuperSamp(var c00 : RGB, var c10 : RGB, var c01 : RGB, var c11 : RGB) {
 
 object SuperSamp {
     final val black = SuperSamp(RGB.black, RGB.black, RGB.black, RGB.black)
-
-    def apply(c00 : RGB, c10 : RGB, c01 : RGB, c11 : RGB) : SuperSamp = {
-        new SuperSamp(c00, c10, c01, c11)
-    }
 
     implicit val rgbMonoid : Monoid[SuperSamp] = new Monoid[SuperSamp] {
         override def empty : SuperSamp =

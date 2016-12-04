@@ -1,12 +1,19 @@
-val scalaPTVersion = "1.0"
+val scalaPTVersion = "1.0-SNAPSHOT"
 
-val scalaLangVersion = "2.12.0"
+val scalaLangVersion = "2.11.8"
 
-val catsVersion = "0.8.1"
-val circeVersion = "0.6.0"
+val avro4sVersion = "1.6.2"
+val catsVersion = "0.7.2"
+val circeVersion = "0.5.4"
 val log4jVersion = "2.7"
-val monixVersion = "2.1.0"
+val monixVersion = "2.0.6"
 val scalaLogVersion = "3.5.0"
+val scoptVersion = "3.5.0"
+
+// The root project is implicit, so we don't have to define it.
+// We do need to prevent publishing for it, though:
+publishArtifact := false
+publish := {}
 
 lazy val commonSettings = Seq(
     version := scalaPTVersion,
@@ -37,10 +44,14 @@ lazy val core = Project(id = "ScalaPT-Core", base = file("core"))
             "io.monix" %% "monix",
             "io.monix" %% "monix-cats"
         ).map(_ % monixVersion)
+    ).settings(
+        libraryDependencies += "com.sksamuel.avro4s" %% "avro4s-core" % avro4sVersion
     )
 
 lazy val app = Project(id = "ScalaPT-App", base = file("app"))
     .settings(commonSettings: _*)
     .settings(name := "ScalaPT-App")
     .settings(mainClass in Compile := Some("scalapt.MainFrame"))
-    .dependsOn(core)
+    .settings(
+        libraryDependencies += "com.github.scopt" %% "scopt" % scoptVersion
+    ).dependsOn(core)
