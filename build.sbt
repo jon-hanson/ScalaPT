@@ -1,12 +1,12 @@
 val scalaPTVersion = "1.0-SNAPSHOT"
 
-val scalaLangVersion = "2.11.8"
+val scalaLangVersion = "2.12.1"
 
-val avro4sVersion = "1.6.2"
-val catsVersion = "0.7.2"
-val circeVersion = "0.5.4"
+val avro4sVersion = "1.6.3"
+val catsVersion = "0.8.1"
+val circeVersion = "0.6.1"
 val log4jVersion = "2.7"
-val monixVersion = "2.0.6"
+val monixVersion = "2.1.1"
 val scalaLogVersion = "3.5.0"
 val scoptVersion = "3.5.0"
 
@@ -28,7 +28,7 @@ lazy val core = Project(id = "ScalaPT-Core", base = file("core"))
             "io.circe" %% "circe-core",
             "io.circe" %% "circe-generic",
             "io.circe" %% "circe-parser"
-            ).map(_ % circeVersion)
+        ).map(_ % circeVersion)
     ).settings(
         libraryDependencies += "org.typelevel" %% "cats" % catsVersion
     ).settings(

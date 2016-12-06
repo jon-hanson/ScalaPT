@@ -42,7 +42,7 @@ class WndMain(cfg : Config) extends Main(cfg)  {
 
     val ins = wnd.getInsets
 
-    override protected def render(frameI : Int, frameSeed : Long) = {
+    override protected def render(frameI : Int, frameSeed : Long) : Unit = {
         if (!closing) {
             rdr.render(frameI, frameSeed, (y : Int, rowSeed : Long, cells : Array[SuperSamp]) => {
                 val row = renderData.merge(y, cells, frameI)
@@ -51,7 +51,7 @@ class WndMain(cfg : Config) extends Main(cfg)  {
         }
     }
 
-    override protected def writeRow(y : Int, row : Frame.Row) = {
+    override protected def writeRow(y : Int, row : Frame.Row) : Unit = {
         val sy = h - y - 1
         super.writeRow(y, row)
 

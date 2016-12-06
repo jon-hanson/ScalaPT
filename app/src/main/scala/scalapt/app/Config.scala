@@ -66,4 +66,8 @@ object Config {
 
     def parse(args : Array[String]) : Option[Config] =
         parser.parse(args, Config())
+
+//    override def toString: String = {
+//
+//    }
 }

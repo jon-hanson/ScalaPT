@@ -69,7 +69,7 @@ object Main {
         })
     }
 
-    protected def merge(lhs : Array[SuperSamp], rhs: Array[SuperSamp], n : Int) {
+    protected def merge(lhs : Array[SuperSamp], rhs: Array[SuperSamp], n : Int) : Unit = {
         for (i <- lhs.indices) {
             lhs(i) = lhs(i).merge(rhs(i), n)
         }
@@ -84,9 +84,10 @@ object Main {
             } else {
                 "png"
             }
+
         logger.info("Saving to file '" + name + "' as format " + format)
         if (!ImageIO.write(image, format, file)) {
-            logger.info("ERROR: filename prefix '" + format + " not recognised as a format")
+            logger.info("ERROR: filename prefix '" + format + " not recognised by ImageIO as a format")
         }
     }
 }
