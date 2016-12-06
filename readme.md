@@ -42,21 +42,29 @@ which, for the default image size, can take several hours on a modern PC.
 
 The project is written entirely in Scala (v2.11.8), builds with the supplied SBT (v0.3.11) build file, and runs on Java 1.8.0.
 
-Once built, run the `scalapt.MainFrame` class, which accepts the following optional arguments:
+Once built, run the `scalapt.Main` class.
+If you run with no arguments, then the resultant error message will document the supported cmd-line options:
+```
+Usage: scalpt [options]
 
-Parameter | Default | Description
-----|----|----
-inFile | scenes/cornell2.json | Filename for scene description in JSON format.
-width | 1024 | Width in pixels of rendered image.
-height | 768 | Height in pixels of rendered image.
-frames | 1024 | Number of frames to render.
-outFile | | Filename to save final image to.
-
+  -i, --sceneFile filename
+                           input scene description file
+  -w, --width pixels       image width
+  -h, --height pixels      image height
+  -n, --frames count       number of frames to render
+  -s, --seed number        random number seed
+  -d, --display            display the image as it renders
+  -o, --imageFile filename
+                           image output file name
+  -f, --framesDir filename
+                           frame output directory
+```
+Note:
 * Sample scenes are provided in the scenes sub-directory.
 * For the output filename, the format is inferred from the suffix.
   * Supported format types are those supported by the Java [ImageIO](https://docs.oracle.com/javase/8/docs/api/javax/imageio/ImageIO.html) write method,
 which, at present, includes JPG, GIF and PNG.
-  * If the file has no suffix then it defaults to PNG.
+  * If the file has no suffix then it defaults to PNG format.
 
 # Notes
 
