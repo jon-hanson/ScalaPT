@@ -1,13 +1,15 @@
 package scalapt.app
 
 import java.awt.image.{BufferedImage, RenderedImage}
-import java.io.File
+import java.io.{File, IOException}
 import javax.imageio.ImageIO
 
 import com.typesafe.scalalogging.Logger
 
 import scalapt.core._
 import cats.implicits._
+import monix.eval.Task
+import monix.execution.Scheduler.Implicits.global
 
 class Main(cfg : Config) {
 
@@ -24,6 +26,11 @@ class Main(cfg : Config) {
     val renderData = Frame(cfg.seed, w, h)
     val image = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB)
 
+    val renderFn : (Int, Long) => Unit = cfg.framesDir.map(openDir) match {
+        case None => renderFrame(_, _)
+        case Some(dir) => renderFrame(dir)(_, _)
+    }
+
     def render() : Unit = {
 
         val ys =
@@ -32,7 +39,7 @@ class Main(cfg : Config) {
                 .traverseU(frameI => {
                     for {
                         seed <- RNG.nextLong
-                        rows = render(frameI, seed)
+                        rows = renderFn(frameI, seed)
                     } yield rows
                 }).runA(Random.xorShift(cfg.seed)).value
 
@@ -41,11 +48,32 @@ class Main(cfg : Config) {
         cfg.imageFile.foreach(file => saveImage(file, image))
     }
 
-    protected def render(frameI : Int, frameSeed : Long) = {
-        rdr.render(frameI, frameSeed, (y : Int, rowSeed : Long, cells : Array[SuperSamp]) => {
-            val row = renderData.merge(y, cells, frameI)
-            writeRow(y, row)
-        })
+    protected def renderFrame(frameI : Int, frameSeed : Long) : Unit = {
+        if (!isClosing()) {
+            rdr.render(frameI, frameSeed, mergeRow(frameI))
+        }
+    }
+
+    protected def renderFrame(frameDir : File)(frameI : Int, frameSeed : Long) : Unit = {
+        if (!isClosing()) {
+            val rows = new Array[Frame.Row](h)
+
+            rdr.render(frameI, frameSeed, (y: Int, rowSeed: Long, cells: Array[SuperSamp]) => {
+                rows(y) = cells
+                mergeRow(frameI)(y, rowSeed, cells)
+            })
+
+            Task({
+                val frame = Frame(frameSeed, w, h, rows)
+                val file = new File(frameDir, frameI.toString + FrameIO.EXTN)
+                FrameIO.save(frame, file)
+            }).runAsync
+        }
+    }
+
+    protected def mergeRow(frameI : Int)(y : Int, rowSeed : Long, cells : Array[SuperSamp]) = {
+        val row = renderData.merge(y, cells, frameI)
+        writeRow(y, row)
     }
 
     protected def writeRow(y : Int, row : Frame.Row) = {
@@ -53,6 +81,10 @@ class Main(cfg : Config) {
         for (sx <- 0 until w) {
             image.setRGB(sx, sy, ColourUtils.colVecToInt(row(sx).clamp))
         }
+    }
+
+    protected def isClosing() : Boolean = {
+        false
     }
 }
 
@@ -72,6 +104,15 @@ object Main {
     protected def merge(lhs : Array[SuperSamp], rhs: Array[SuperSamp], n : Int) : Unit = {
         for (i <- lhs.indices) {
             lhs(i) = lhs(i).merge(rhs(i), n)
+        }
+    }
+
+    private def openDir(name : String) : File = {
+        val dir = new File(name)
+        if (!dir.isDirectory) {
+            throw new IOException("No directory found called " + name)
+        } else {
+            dir
         }
     }
 

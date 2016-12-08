@@ -1,7 +1,8 @@
 package scalapt.app
 
 import java.awt.event.{WindowAdapter, WindowEvent}
-import java.awt.{Frame => JFrame, Color, Dimension, Graphics, Graphics2D, RenderingHints}
+import java.awt.{Color, Dimension, Graphics, Graphics2D, RenderingHints, Frame => JFrame}
+import java.io.File
 
 import scalapt.core.{Frame, SuperSamp}
 
@@ -42,13 +43,8 @@ class WndMain(cfg : Config) extends Main(cfg)  {
 
     val ins = wnd.getInsets
 
-    override protected def render(frameI : Int, frameSeed : Long) : Unit = {
-        if (!closing) {
-            rdr.render(frameI, frameSeed, (y : Int, rowSeed : Long, cells : Array[SuperSamp]) => {
-                val row = renderData.merge(y, cells, frameI)
-                writeRow(y, row)
-            })
-        }
+    override protected def isClosing() : Boolean = {
+        closing
     }
 
     override protected def writeRow(y : Int, row : Frame.Row) : Unit = {

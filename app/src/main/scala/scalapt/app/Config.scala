@@ -11,9 +11,25 @@ case class Config(
     display : Boolean = false,
     imageFile : Option[String] = None,
     framesDir : Option[String] = None
-)
+) {
+    import Config._
+
+    override def toString: String = {
+            EOL +
+            "\tsceneFile=" + sceneFile + EOL +
+            "\twidth=" + width + EOL +
+            "\theight=" + height + EOL +
+            "\tframes=" + frames + EOL +
+            "\tseed=" + seed + EOL +
+            "\tdisplay=" + display + EOL +
+            "\timageFile=" + imageFile + EOL +
+            "\tframesDir=" + framesDir
+    }
+}
 
 object Config {
+    val EOL = System.lineSeparator()
+
     implicit val optionRead : Read[Option[String]] = Read.reads { Some(_) }
 
     val parser = new scopt.OptionParser[Config]("scalpt") {
@@ -66,8 +82,4 @@ object Config {
 
     def parse(args : Array[String]) : Option[Config] =
         parser.parse(args, Config())
-
-//    override def toString: String = {
-//
-//    }
 }
