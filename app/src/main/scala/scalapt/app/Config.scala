@@ -4,11 +4,11 @@ import scopt.Read
 
 case class Config(
     sceneFile : String = "",
-    width : Integer = -1,
-    height : Integer = -1,
-    frames : Integer = -1,
+    width : Integer = 800,
+    height : Integer = 800,
+    frames : Integer = 256,
     seed : Long = 0,
-    display : Boolean = false,
+    display : Boolean = true,
     imageFile : Option[String] = None,
     framesDir : Option[String] = None
 ) {
@@ -42,25 +42,21 @@ object Config {
             .text("input scene description file")
 
         opt[Int]('w', "width")
-            .required()
             .valueName("pixels")
             .action((x, cfg) => cfg.copy(width = x))
             .text("image width")
 
         opt[Int]('h', "height")
-            .required()
             .valueName("pixels")
             .action((x, cfg) => cfg.copy(height = x))
             .text("image height")
 
         opt[Int]('n', "frames")
-            .required()
             .valueName("count")
             .action((x, cfg) => cfg.copy(frames = x))
             .text("number of frames to render")
 
         opt[Long]('s', "seed")
-            .required()
             .valueName("number")
             .action((x, cfg) => cfg.copy(seed = x))
             .text("random number seed")

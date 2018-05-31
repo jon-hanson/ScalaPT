@@ -2,9 +2,8 @@ package scalapt.app
 
 import java.awt.event.{WindowAdapter, WindowEvent}
 import java.awt.{Color, Dimension, Graphics, Graphics2D, RenderingHints, Frame => JFrame}
-import java.io.File
 
-import scalapt.core.{Frame, SuperSamp}
+import scalapt.core.Frame
 
 class WndMain(cfg : Config) extends Main(cfg)  {
 

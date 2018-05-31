@@ -2,10 +2,9 @@ package scalapt.app
 
 import java.awt.image.{BufferedImage, RenderedImage}
 import java.io.{File, IOException}
+
 import javax.imageio.ImageIO
-
 import com.typesafe.scalalogging.Logger
-
 import scalapt.core._
 import cats.implicits._
 import monix.eval.Task
@@ -27,7 +26,7 @@ class Main(cfg : Config) {
     val image = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB)
 
     val renderFn : (Int, Long) => Unit = cfg.framesDir.map(openDir) match {
-        case None => renderFrame(_, _)
+        case None => renderFrame
         case Some(dir) => renderFrame(dir)(_, _)
     }
 
@@ -36,17 +35,20 @@ class Main(cfg : Config) {
         val ys =
             (0 until cfg.frames)
                 .toList
-                .traverseU(frameI => {
-                    for {
-                        seed <- RNG.nextLong
-                        rows = renderFn(frameI, seed)
-                    } yield rows
-                }).runA(Random.xorShift(cfg.seed)).value
+                .traverse(render)
+                .runA(Random.xorShift(cfg.seed))
+                .value
 
         logger.info("Done")
 
         cfg.imageFile.foreach(file => saveImage(file, image))
     }
+
+    def render(frameI : Int) : RNG.Type[Unit] =
+        for {
+            seed <- RNG.nextLong
+            rows = renderFn(frameI, seed)
+        } yield rows
 
     protected def renderFrame(frameI : Int, frameSeed : Long) : Unit = {
         if (!isClosing()) {
@@ -92,7 +94,7 @@ object Main {
     val logger = Logger[Main]
 
     def main(args : Array[String]) : Unit = {
-        Config.parse(args).map(cfg => {
+        Config.parse(args).foreach(cfg => {
             (if (cfg.display)
                 new WndMain(cfg)
             else

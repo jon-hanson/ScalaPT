@@ -55,5 +55,5 @@ class MonteCarloRenderer(
 }
 
 object MonteCarloRenderer {
-    val logger = Logger[MonteCarloRenderer]
+    val logger : Logger = Logger[MonteCarloRenderer]
 }

@@ -1,5 +1,6 @@
 package scalapt.core
 
+import cats.data.State
 import cats.implicits._
 import com.typesafe.scalalogging.Logger
 import monix.eval.Task
@@ -36,7 +37,7 @@ trait Renderer {
         val tasks =
             (0 until height)
                 .toList
-                .traverseU(y => for {seed <- RNG.nextLong} yield (y, seed))
+                .traverse(genRowSeed)
                 .runA(Random.xorShift(frameSeed))
                 .value
                 .map({case (y, seed) =>
@@ -51,10 +52,13 @@ trait Renderer {
         Await.result(Task.gather(tasks).runAsync, 60.minutes)
     }
 
+    def genRowSeed(y : Int) : RNG.Type[(Int, Long)] =
+        for {seed <- RNG.nextLong} yield (y, seed)
+
     def render(y : Int) :  RNG.Type[List[SuperSamp]] =
         (0 until width)
             .toList
-            .traverseU(render(_, y))
+            .traverse(render(_, y))
 
     def render(x : Int, y : Int) : RNG.Type[SuperSamp] = {
         def subPixelRad(cx : Double, cy : Double) : RNG.Type[RGB] = {
@@ -93,5 +97,5 @@ object Renderer {
     // In practice we should never hit it due to the Russian Roulette termination.
     final val MaxDepth = 2000
 
-    val logger = Logger[Renderer]
+    val logger : Logger = Logger[Renderer]
 }

@@ -23,7 +23,8 @@ object ColourUtils {
 
 case class RGB(red : Double, green : Double, blue : Double) {
 
-    override def toString = "{R : " + red + ", G : " + green + ", B : " + blue + "}"
+    override def toString : String =
+        "{R : " + red + ", G : " + green + ", B : " + blue + "}"
 
     def apply(i : Int) : Double = {
         i match {
@@ -33,7 +34,7 @@ case class RGB(red : Double, green : Double, blue : Double) {
         }
     }
 
-    def unary_+ =
+    def unary_+ : RGB =
         this
 
     def unary_- =
@@ -48,31 +49,31 @@ case class RGB(red : Double, green : Double, blue : Double) {
     def *(s : Double) =
         RGB(red * s, green * s, blue * s)
 
-    def /(d : Double) = {
+    def /(d : Double) : RGB = {
         this * (1.0 / d)
     }
 
     def *(rhs : RGB) =
         RGB(red * rhs.red, green * rhs.green, blue * rhs.blue)
 
-    def length =
+    def length : Double =
         math.sqrt(lengthSquared)
 
-    def lengthSquared =
+    def lengthSquared : Double =
         red * red + green * green + blue * blue
 
-    def normalise = {
+    def normalise : RGB = {
         val s = 1.0 / length
         RGB(red * s, green * s, blue * s)
     }
 
-    def hasNaNs =
+    def hasNaNs : Boolean =
         red.isNaN || green.isNaN || blue.isNaN
 
     def clamp =
         RGB(MathUtil.clamp(red), MathUtil.clamp(green), MathUtil.clamp(blue))
 
-    def max =
+    def max : Double =
         math.max(math.max(red, green), blue)
 }
 
@@ -84,7 +85,7 @@ object RGB {
     final val green = RGB(0.0, 1.0, 0.0)
     final val blue = RGB(0.0, 0.0, 1.0)
 
-    def apply() =
+    def apply(): RGB =
         black
 
     implicit val rgbMonoid : Monoid[RGB] = new Monoid[RGB] {
@@ -109,6 +110,7 @@ case class SuperSamp(var c00 : RGB, var c10 : RGB, var c01 : RGB, var c11 : RGB)
             case (0, 1) => c01
             case (1, 0) => c10
             case (1, 1) => c11
+            case (_, _) => throw new IllegalArgumentException("SuperSamp.apply(" + x + "," + y + ") called");
         }
 
     def merge(rhs : SuperSamp, n : Int) : SuperSamp =

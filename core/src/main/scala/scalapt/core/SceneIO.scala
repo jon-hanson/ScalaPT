@@ -26,7 +26,7 @@ object Codecs {
 
     implicit val decodeAxis : Decoder[Axis.Type] =
         Decoder.instance(c =>
-            c.focus.asString match {
+            c.focus.flatMap(_.asString) match {
                 case Some(s) =>
                     try
                         Either.right(Axis.withName(s))
