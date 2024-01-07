@@ -43,7 +43,7 @@ which, for the default image size, can take several hours on a modern PC.
 The project is written entirely in Scala (v2.11.8), builds with the supplied SBT (v0.3.11) build file, and runs on Java 1.8.0.
 
 Once built, run the `scalapt.Main` class.
-If you run with no arguments, then the resultant error message will document the supported cmd-line options:
+If you run with no arguments, then the resultant error message will document the supported command-line options:
 ```
 Usage: scalpt [options]
 
